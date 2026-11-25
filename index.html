@@ -1,0 +1,2619 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/jpeg" href="./assets/logo.jpeg">
+  <title>NNPC CubHouse — NNPC Tennis Club Kaduna</title>
+  <meta name="description" content="Official digital portal, court booking and member governance system for NNPC Tennis Club Kaduna, Nigeria.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              forest: '#0F1E17',
+              deep: '#07100B',
+              emerald: '#162C22',
+              card: '#12241C',
+              gold: '#C5A059',
+              'gold-light': '#DFC488',
+              'gold-dark': '#8E6F2D',
+              parchment: '#FAF8F5',
+              cream: '#F4EFE6',
+              accent: '#2B5742',
+              court: '#C86A4B'
+            }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Gold & Metallic Sheens */
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #ECC880 0%, #C5A059 50%, #8E6F2D 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gold-border-gradient {
+      border-image: linear-gradient(135deg, #ECC880, #C5A059, #8E6F2D) 1;
+    }
+    .gold-glow {
+      box-shadow: 0 0 25px rgba(197, 160, 89, 0.25);
+    }
+    .green-glow {
+      box-shadow: 0 0 30px rgba(43, 87, 66, 0.4);
+    }
+    .bg-grid-subtle {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(197, 160, 89, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(197, 160, 89, 0.05) 1px, transparent 1px);
+    }
+    
+    /* 3D Card Flip & Perspective */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .card-preserve-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+    }
+    .card-flipped {
+      transform: rotateY(180deg);
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+
+    /* CR80 ISO Physical Card Standard (85.6mm x 53.98mm ~ 1.586 ratio) */
+    .cr80-card {
+      width: 340px;
+      height: 214px;
+      border-radius: 12px;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(197, 160, 89, 0.4);
+    }
+    #cardFront, #cardBack {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    @media (min-width: 640px) {
+      #cardFront, #cardBack {
+        border-radius: 14px;
+      }
+    }
+    @media (min-width: 640px) {
+      .cr80-card {
+        width: 428px;
+        height: 270px;
+        border-radius: 14px;
+      }
+    }
+
+    /* Print Styles for CR80 Card & Receipts */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableArea, #printableArea * {
+        visibility: visible !important;
+      }
+      #printableArea {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        padding: 20mm !important;
+        background: white !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-page-break {
+        page-break-before: always;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #07100B;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #162C22;
+      border: 1px solid rgba(197, 160, 89, 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2B5742;
+    }
+  </style>
+</head>
+
+<body class="bg-brand-deep text-brand-parchment font-sans antialiased min-h-screen selection:bg-brand-gold selection:text-brand-deep flex flex-col justify-between">
+
+  <!-- TOP HEADER / TICKER -->
+  <div class="bg-brand-forest/90 border-b border-brand-gold/20 text-xs py-2 px-4 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+      <!-- Live Court Marquee -->
+      <div class="flex items-center gap-3 overflow-hidden w-full md:w-auto">
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-mono text-[11px] font-semibold uppercase tracking-wider shrink-0">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live Courts
+        </span>
+        <div class="marquee-track flex gap-6 text-[12px] text-gray-300 font-mono whitespace-nowrap overflow-x-auto no-scrollbar" id="courtMarquee">
+          <span>Court 1 (Hard): <b class="text-amber-300">Singles (4-3)</b></span>
+          <span class="text-brand-gold/40">•</span>
+          <span>Court 2 (Hard): <b class="text-emerald-400">Available</b></span>
+          <span class="text-brand-gold/40">•</span>
+          <span>Court 3 (Hard): <b class="text-amber-300">Drills Session</b></span>
+          <span class="text-brand-gold/40">•</span>
+          <span>Court 4 (Hard): <b class="text-emerald-400">Available</b></span>
+          <span class="text-brand-gold/40">•</span>
+          <span>Court 5 (Hard): <b class="text-blue-300">Floodlights Active</b></span>
+          <span class="text-brand-gold/40">•</span>
+          <span>Court 6 (Hard): <b class="text-emerald-400">Available for Booking</b></span>
+        </div>
+      </div>
+
+      <!-- Quick Status Badges -->
+      <div class="flex items-center gap-4 text-xs font-mono text-brand-gold-light shrink-0">
+        <span class="flex items-center gap-1">
+          <svg class="w-3.5 h-3.5 text-brand-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+          NNPC Quarters Sabo, Kaduna (29°C Courts Dry)
+        </span>
+        <span class="hidden sm:inline-block text-brand-gold/40">|</span>
+        <button onclick="openAdminModal()" class="hover:text-white transition flex items-center gap-1 text-[11px] uppercase tracking-wider bg-brand-emerald/80 px-2 py-0.5 rounded border border-brand-gold/30">
+          <svg class="w-3 h-3 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          Admin Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN NAVIGATION -->
+  <header class="bg-brand-deep/95 border-b border-brand-gold/30 backdrop-blur-lg sticky top-[37px] z-40 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+      
+      <!-- Brand Logo & Crest -->
+      <a href="javascript:void(0)" onclick="switchTab('overview')" class="flex items-center gap-3.5 group">
+        <!-- SVG Crest -->
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-brand-forest to-brand-deep border-2 border-brand-gold overflow-hidden flex items-center justify-center shadow-md group-hover:scale-105 transition-transform shrink-0">
+          <img src="./assets/logo.jpeg" alt="NNPC Tennis Club Logo" class="w-full h-full object-cover">
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-serif text-2xl font-bold tracking-wider gold-gradient-text">NNPC CUBHOUSE</span>
+            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-brand-gold/15 text-brand-gold border border-brand-gold/40">NNPC Quarters, Sabo</span>
+          </div>
+          <p class="text-[11px] font-mono tracking-widest text-gray-400 uppercase">Est. 1978 • NNPC Quarters, Sabo, Kaduna • Floodlit Hard Courts</p>
+        </div>
+      </a>
+
+      <!-- Navigation Tabs (Desktop) -->
+      <nav class="hidden lg:flex items-center gap-1">
+        <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn px-3.5 py-2 text-sm font-medium rounded-lg transition text-brand-gold bg-brand-emerald/70 border border-brand-gold/30">
+          Clubhouse
+        </button>
+        <button onclick="switchTab('booking')" id="nav-booking" class="nav-btn px-3.5 py-2 text-sm font-medium rounded-lg transition text-gray-300 hover:text-brand-gold-light hover:bg-brand-forest/60">
+          Book Court
+        </button>
+        <button onclick="switchTab('passport')" id="nav-passport" class="nav-btn px-3.5 py-2 text-sm font-medium rounded-lg transition text-gray-300 hover:text-brand-gold-light hover:bg-brand-forest/60">
+          Digital ID & CR80
+        </button>
+        <button onclick="switchTab('ladder')" id="nav-ladder" class="nav-btn px-3.5 py-2 text-sm font-medium rounded-lg transition text-gray-300 hover:text-brand-gold-light hover:bg-brand-forest/60">
+          Member Ladder
+        </button>
+        <button onclick="switchTab('media')" id="nav-media" class="nav-btn px-3.5 py-2 text-sm font-medium rounded-lg transition text-gray-300 hover:text-brand-gold-light hover:bg-brand-forest/60">
+          Media Studio
+        </button>
+        <button onclick="switchTab('dues')" id="nav-dues" class="nav-btn px-3.5 py-2 text-sm font-medium rounded-lg transition text-gray-300 hover:text-brand-gold-light hover:bg-brand-forest/60">
+          Dues & Treasury
+        </button>
+      </nav>
+
+      <!-- Action Button -->
+      <div class="flex items-center gap-3">
+        <button onclick="switchTab('booking')" class="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-xs font-semibold rounded-lg group bg-gradient-to-br from-brand-gold via-brand-gold-light to-brand-gold-dark hover:shadow-lg hover:shadow-brand-gold/20 transition">
+          <span class="relative px-4 py-2 transition-all ease-in duration-75 bg-brand-deep rounded-[7px] group-hover:bg-opacity-0 font-mono uppercase tracking-wider text-brand-gold group-hover:text-brand-deep">
+            Reserve Court
+          </span>
+        </button>
+        <!-- Mobile Menu Toggle -->
+        <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-lg bg-brand-card border border-brand-gold/30 text-brand-gold">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Nav Dropdown -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-brand-forest/98 border-b border-brand-gold/30 px-4 pt-2 pb-4 space-y-1">
+      <button onclick="switchTab('overview'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-brand-gold-light hover:bg-brand-emerald">Clubhouse Overview</button>
+      <button onclick="switchTab('booking'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-brand-emerald">Court Bookings</button>
+      <button onclick="switchTab('passport'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-brand-emerald">Digital ID & CR80 Studio</button>
+      <button onclick="switchTab('ladder'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-brand-emerald">Member Ladder & Roster</button>
+      <button onclick="switchTab('media'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-brand-emerald">Media Studio</button>
+      <button onclick="switchTab('dues'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-brand-emerald">Dues & Treasury</button>
+      <button onclick="openAdminModal(); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-amber-400 hover:bg-brand-emerald">Admin Governance Console</button>
+    </div>
+  </header>
+
+  <!-- MAIN TAB CONTAINERS -->
+  <main class="flex-grow">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: OVERVIEW & ROTATING HERO CAROUSEL   -->
+    <!-- ========================================== -->
+    <section id="tab-overview" class="tab-pane block">
+      
+      <!-- HERO SECTION WITH ROTATING 60s ACTION HERO SHOWCASE -->
+      <div class="relative min-h-[580px] lg:min-h-[640px] flex items-center overflow-hidden border-b border-brand-gold/20">
+        
+        <!-- Rotating Background Slides -->
+        <div id="heroCarousel" class="absolute inset-0 z-0">
+          <!-- Slide 1 -->
+          <div class="hero-slide absolute inset-0 transition-opacity duration-1000 opacity-100 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=2000&q=80');">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-deep via-brand-deep/80 to-brand-forest/60"></div>
+          </div>
+          <!-- Slide 2 -->
+          <div class="hero-slide absolute inset-0 transition-opacity duration-1000 opacity-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=2000&q=80');">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-deep via-brand-deep/80 to-brand-forest/60"></div>
+          </div>
+          <!-- Slide 3 -->
+          <div class="hero-slide absolute inset-0 transition-opacity duration-1000 opacity-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=2000&q=80');">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-deep via-brand-deep/80 to-brand-forest/60"></div>
+          </div>
+          <!-- Slide 4 -->
+          <div class="hero-slide absolute inset-0 transition-opacity duration-1000 opacity-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1560012057-4372e14c5085?auto=format&fit=crop&w=2000&q=80');">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-deep via-brand-deep/80 to-brand-forest/60"></div>
+          </div>
+        </div>
+
+        <!-- Hero Content Layer -->
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+          <div class="max-w-3xl">
+            <!-- Eyebrow Badge -->
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-forest/80 border border-brand-gold/40 text-brand-gold font-mono text-xs mb-6 backdrop-blur-md">
+              <span class="w-2 h-2 rounded-full bg-brand-gold animate-ping"></span>
+              NNPC Tennis Club • NNPC Quarters, Sabo, Kaduna • Private Heritage Portal
+            </div>
+
+            <!-- Headline -->
+            <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight mb-6">
+              The game doesn't stop <br/>
+              <span class="gold-gradient-text italic font-normal">when the sun does.</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="text-lg sm:text-xl text-gray-300 font-light leading-relaxed mb-8 max-w-2xl">
+              Welcome to <strong>NNPC CubHouse</strong> at <strong>NNPC Quarters, Sabo, Kaduna</strong>. Experience six championship floodlit hard courts, verified NTRP player calibrators, print-ready ISO CR80 physical credentials, and seamless member governance.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-wrap items-center gap-4">
+              <button onclick="switchTab('booking')" class="px-6 py-3.5 rounded-lg bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-semibold font-mono uppercase tracking-wider text-sm shadow-xl hover:scale-[1.02] active:scale-95 transition">
+                Book a Match Session
+              </button>
+              <button onclick="switchTab('passport')" class="px-6 py-3.5 rounded-lg bg-brand-forest/80 border border-brand-gold/40 text-brand-gold-light font-semibold font-mono uppercase tracking-wider text-sm backdrop-blur-sm hover:bg-brand-emerald transition">
+                Generate Member CR80 ID
+              </button>
+              <button onclick="switchTab('dues')" class="px-5 py-3.5 rounded-lg text-gray-300 hover:text-brand-gold font-mono text-xs uppercase tracking-widest flex items-center gap-2">
+                Clear Club Dues &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- Carousel Controls & Slide Progress Indicator -->
+          <div class="mt-12 flex items-center justify-between border-t border-brand-gold/20 pt-6">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-gray-400">HERO ROTATION:</span>
+              <div class="flex items-center gap-2">
+                <button onclick="setHeroSlide(0)" class="slide-indicator w-8 h-1.5 rounded-full bg-brand-gold transition-all"></button>
+                <button onclick="setHeroSlide(1)" class="slide-indicator w-3 h-1.5 rounded-full bg-gray-600 transition-all"></button>
+                <button onclick="setHeroSlide(2)" class="slide-indicator w-3 h-1.5 rounded-full bg-gray-600 transition-all"></button>
+                <button onclick="setHeroSlide(3)" class="slide-indicator w-3 h-1.5 rounded-full bg-gray-600 transition-all"></button>
+              </div>
+              <span id="slideTimerText" class="text-[11px] font-mono text-brand-gold-light ml-2">60s cycle</span>
+            </div>
+            <div class="text-xs font-mono text-gray-400 hidden sm:block">
+              Courts 1–6 • NNPC Quarters, Sabo Facility • 06:00 – 23:00 Daily
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CLUB STATS / TELEMETRY SECTION -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          
+          <div class="bg-brand-card/95 border border-brand-gold/30 rounded-xl p-5 backdrop-blur-md shadow-xl">
+            <div class="flex items-center justify-between text-brand-gold mb-2">
+              <span class="font-mono text-xs uppercase tracking-wider">Active Roster</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            </div>
+            <div class="font-serif text-3xl font-bold text-white">480+</div>
+            <p class="text-[11px] font-mono text-gray-400 mt-1">Verified Members in Kaduna</p>
+          </div>
+
+          <div class="bg-brand-card/95 border border-brand-gold/30 rounded-xl p-5 backdrop-blur-md shadow-xl">
+            <div class="flex items-center justify-between text-brand-gold mb-2">
+              <span class="font-mono text-xs uppercase tracking-wider">Championship Titles</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+            </div>
+            <div class="font-serif text-3xl font-bold text-brand-gold">31</div>
+            <p class="text-[11px] font-mono text-gray-400 mt-1">National & Inter-Club Laurels</p>
+          </div>
+
+          <div class="bg-brand-card/95 border border-brand-gold/30 rounded-xl p-5 backdrop-blur-md shadow-xl">
+            <div class="flex items-center justify-between text-brand-gold mb-2">
+              <span class="font-mono text-xs uppercase tracking-wider">Floodlit Courts</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            </div>
+            <div class="font-serif text-3xl font-bold text-white">6 Courts</div>
+            <p class="text-[11px] font-mono text-gray-400 mt-1">6 Championship Hard Courts</p>
+          </div>
+
+          <div class="bg-brand-card/95 border border-brand-gold/30 rounded-xl p-5 backdrop-blur-md shadow-xl">
+            <div class="flex items-center justify-between text-brand-gold mb-2">
+              <span class="font-mono text-xs uppercase tracking-wider">Session Hours</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div class="font-serif text-3xl font-bold text-emerald-400">06:00–23:00</div>
+            <p class="text-[11px] font-mono text-gray-400 mt-1">Illuminated Night Play</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- HERITAGE & AMENITIES GRID -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+          <p class="font-mono text-xs uppercase tracking-widest text-brand-gold mb-3">Distinguished Private Facility</p>
+          <h2 class="font-serif text-3xl sm:text-5xl font-bold text-white">Elegance, Sport & Camaraderie</h2>
+          <div class="w-16 h-0.5 bg-brand-gold mx-auto mt-4"></div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          
+          <div class="bg-brand-forest/60 border border-brand-gold/20 rounded-2xl overflow-hidden hover:border-brand-gold/50 transition duration-300 group">
+            <div class="h-48 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80" alt="Hard Court Courts" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-brand-card to-transparent"></div>
+              <span class="absolute top-4 right-4 bg-brand-deep/80 border border-brand-gold/30 text-brand-gold font-mono text-[11px] px-2.5 py-1 rounded-full">Courts 1–4</span>
+            </div>
+            <div class="p-6">
+              <h3 class="font-serif text-2xl font-semibold text-white mb-2">Championship Hard Courts</h3>
+              <p class="text-sm text-gray-300 font-light leading-relaxed mb-4">
+                Tournament-grade acrylic hard court surfaces engineered for true bounce, quick recovery, and all-weather play under the Kaduna sun.
+              </p>
+              <button onclick="openBookingPrefill(1)" class="text-xs font-mono uppercase tracking-wider text-brand-gold hover:text-brand-gold-light flex items-center gap-1">
+                Book Hard Court &rarr;
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-brand-forest/60 border border-brand-gold/20 rounded-2xl overflow-hidden hover:border-brand-gold/50 transition duration-300 group">
+            <div class="h-48 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=800&q=80" alt="Floodlit Night Play" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-brand-card to-transparent"></div>
+              <span class="absolute top-4 right-4 bg-brand-deep/80 border border-brand-gold/30 text-brand-gold font-mono text-[11px] px-2.5 py-1 rounded-full">Courts 5–6</span>
+            </div>
+            <div class="p-6">
+              <h3 class="font-serif text-2xl font-semibold text-white mb-2">Floodlit Night Hard Courts</h3>
+              <p class="text-sm text-gray-300 font-light leading-relaxed mb-4">
+                Tournament grade acrylic DecoTurf with high-lux non-glare LED illumination. Play comfortably in the cool Kaduna evening breeze until 11:00 PM.
+              </p>
+              <button onclick="openBookingPrefill(5)" class="text-xs font-mono uppercase tracking-wider text-brand-gold hover:text-brand-gold-light flex items-center gap-1">
+                Reserve Floodlit Session &rarr;
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-brand-forest/60 border border-brand-gold/20 rounded-2xl overflow-hidden hover:border-brand-gold/50 transition duration-300 group">
+            <div class="h-48 overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1560012057-4372e14c5085?auto=format&fit=crop&w=800&q=80" alt="Clubhouse Lounge" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-brand-card to-transparent"></div>
+              <span class="absolute top-4 right-4 bg-brand-deep/80 border border-brand-gold/30 text-brand-gold font-mono text-[11px] px-2.5 py-1 rounded-full">Social Suite</span>
+            </div>
+            <div class="p-6">
+              <h3 class="font-serif text-2xl font-semibold text-white mb-2">Member Clubhouse & Bar</h3>
+              <p class="text-sm text-gray-300 font-light leading-relaxed mb-4">
+                Relaxed pavilion with cold refreshments, locker amenities, match video playback screens, and social Saturday mixers for energy sector leaders and players.
+              </p>
+              <button onclick="switchTab('media')" class="text-xs font-mono uppercase tracking-wider text-brand-gold hover:text-brand-gold-light flex items-center gap-1">
+                View Clubhouse Gallery &rarr;
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Address & Club Quarters Location Card -->
+        <div class="mt-12 bg-gradient-to-r from-brand-forest via-brand-card to-brand-deep border-2 border-brand-gold/40 rounded-2xl p-6 sm:p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl bg-brand-deep border border-brand-gold flex items-center justify-center text-brand-gold shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </div>
+            <div>
+              <span class="text-[11px] font-mono uppercase tracking-widest text-brand-gold font-bold">Official Facility Address</span>
+              <h3 class="font-serif text-2xl font-bold text-white mt-0.5">NNPC Quarters, Sabo, Kaduna</h3>
+              <p class="text-xs text-gray-300 font-mono mt-1">NNPC Senior Staff Quarters, Sabon Tasha (Sabo), Kaduna South, Kaduna State, Nigeria</p>
+              <div class="flex flex-wrap gap-4 mt-3 text-[11px] font-mono text-gray-400">
+                <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Gate 1 Security Checkpoint</span>
+                <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-brand-gold"></span> Member & Guest Parking Lot</span>
+                <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> 06:00 – 23:00 Daily</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="switchTab('booking')" class="px-5 py-3 rounded-lg bg-brand-gold text-brand-deep font-mono font-bold text-xs uppercase tracking-wider shrink-0 hover:bg-brand-gold-light transition shadow-lg">
+            Directions & Court Passes
+          </button>
+        </div>
+
+      </section>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: COURT BOOKING & RESERVATION ENGINE   -->
+    <!-- ========================================== -->
+    <section id="tab-booking" class="tab-pane hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      <div class="mb-8">
+        <span class="font-mono text-xs uppercase tracking-widest text-brand-gold">Court Telemetry & Scheduling</span>
+        <h2 class="font-serif text-3xl sm:text-5xl font-bold text-white mt-1">Book a Court or Match</h2>
+        <p class="text-gray-300 text-sm mt-2 max-w-2xl">
+          Reserve Championship Floodlit Hard Courts. Registered members enjoy complimentary access; visiting players in Kaduna can reserve with a Guest Day-Pass.
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-8">
+        
+        <!-- Booking Form (Left Side) -->
+        <div class="lg:col-span-5 bg-brand-card border border-brand-gold/30 rounded-2xl p-6 sm:p-8 shadow-xl">
+          <form id="courtBookingForm" onsubmit="handleCourtBooking(event)" class="space-y-5">
+            
+            <!-- User Type Toggle -->
+            <div>
+              <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-2">Player Classification</label>
+              <div class="grid grid-cols-2 gap-2 p-1 bg-brand-deep rounded-xl border border-brand-gold/20">
+                <button type="button" onclick="setBookingPlayerType('member')" id="btnTypeMember" class="py-2.5 text-xs font-mono font-semibold rounded-lg bg-brand-emerald text-brand-gold border border-brand-gold/40 transition">
+                  Club Member (Complimentary)
+                </button>
+                <button type="button" onclick="setBookingPlayerType('guest')" id="btnTypeGuest" class="py-2.5 text-xs font-mono font-semibold rounded-lg text-gray-400 hover:text-white transition">
+                  Visiting Guest (₦5,000 Day-Pass)
+                </button>
+              </div>
+            </div>
+
+            <!-- Full Name & Contact -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1.5">Player Name *</label>
+                <input type="text" id="bookPlayerName" required placeholder="e.g. Victor Benedict" class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+              </div>
+              <div id="memberIdField">
+                <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1.5">Member ID / Phone *</label>
+                <input type="text" id="bookMemberId" placeholder="NNPC-KD-2026-084" class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+              </div>
+            </div>
+
+            <!-- Court Selection -->
+            <div>
+              <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1.5">Court Surface & Facility *</label>
+              <select id="bookCourtSelect" required class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+                <option value="Court 1 (Hard)">Court 1 — Championship Hard Court</option>
+                <option value="Court 2 (Hard)">Court 2 — Tournament Hard Court</option>
+                <option value="Court 3 (Hard)">Court 3 — Match Hard Court</option>
+                <option value="Court 4 (Hard)">Court 4 — Practice & Training Hard Court</option>
+                <option value="Court 5 (Hard)">Court 5 — Floodlit DecoTurf Hard Court</option>
+                <option value="Court 6 (Hard)">Court 6 — Floodlit DecoTurf (Night Special)</option>
+              </select>
+            </div>
+
+            <!-- Match Type & Format -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1.5">Match Format</label>
+                <select id="bookFormat" class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+                  <option value="Singles Match">Singles Match</option>
+                  <option value="Doubles Match">Doubles Match</option>
+                  <option value="Ball Machine Practice">Ball Machine Practice</option>
+                  <option value="Open Partner Request">Open Partner Request (Find Opponent)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1.5">Duration</label>
+                <select id="bookDuration" class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+                  <option value="60 min">60 Minutes</option>
+                  <option value="90 min">90 Minutes</option>
+                  <option value="120 min">120 Minutes</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Date & Time Slot -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1.5">Booking Date *</label>
+                <input type="date" id="bookDate" required class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1.5">Time Slot *</label>
+                <select id="bookTime" required class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+                  <option value="06:30 - 07:30">06:30 – 07:30 (Dawn Session)</option>
+                  <option value="07:30 - 08:30">07:30 – 08:30 (Morning Club)</option>
+                  <option value="08:30 - 09:30">08:30 – 09:30 (Morning Club)</option>
+                  <option value="16:00 - 17:00">16:00 – 17:00 (Afternoon Hard Court)</option>
+                  <option value="17:00 - 18:00">17:00 – 18:00 (Sunset Hit)</option>
+                  <option value="18:30 - 19:30">18:30 – 19:30 (Floodlit Evening)</option>
+                  <option value="19:30 - 20:30">19:30 – 20:30 (Floodlit Night)</option>
+                  <option value="20:30 - 21:30">20:30 – 21:30 (Late Lights)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Guest Fee Notice (dynamic) -->
+            <div id="guestFeeNotice" class="hidden p-3 rounded-lg bg-amber-950/40 border border-amber-600/40 text-xs text-amber-200">
+              <div class="flex items-center gap-2 font-semibold">
+                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Visiting Guest Day-Pass Required: ₦5,000
+              </div>
+              <p class="mt-1 text-[11px] text-amber-300/80">Includes locker privileges, floodlight usage, and complimentary club ball tube.</p>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 rounded-lg bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-semibold font-mono uppercase tracking-wider text-sm shadow-xl hover:scale-[1.01] active:scale-95 transition">
+              Confirm & Issue Court Pass
+            </button>
+          </form>
+        </div>
+
+        <!-- Live Court Schedule & Active Reservations Feed (Right Side) -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Quick Filter Tabs -->
+          <div class="bg-brand-card border border-brand-gold/30 rounded-2xl p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+              <div>
+                <h3 class="font-serif text-2xl font-bold text-white">NNPC Quarters Sabo Court Status Grid</h3>
+                <p class="text-xs font-mono text-gray-400">All 6 Championship Courts at NNPC Quarters, Sabo Facility</p>
+              </div>
+              <button onclick="clearPastBookings()" class="text-xs font-mono text-red-400 hover:text-red-300 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                Reset Demo Bookings
+              </button>
+            </div>
+
+            <!-- Court Status Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div class="bg-brand-deep/80 border border-brand-gold/20 p-3 rounded-lg">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold text-brand-gold">Court 1 (Hard)</span>
+                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                </div>
+                <p class="text-[11px] text-gray-300 mt-1">Hard Court</p>
+                <div class="mt-2 text-[11px] font-mono text-amber-300">Booked: 17:00</div>
+              </div>
+
+              <div class="bg-brand-deep/80 border border-brand-gold/20 p-3 rounded-lg">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold text-brand-gold">Court 2 (Hard)</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+                <p class="text-[11px] text-gray-300 mt-1">Hard Court</p>
+                <div class="mt-2 text-[11px] font-mono text-emerald-400">Available Now</div>
+              </div>
+
+              <div class="bg-brand-deep/80 border border-brand-gold/20 p-3 rounded-lg">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold text-brand-gold">Court 3 (Hard)</span>
+                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                </div>
+                <p class="text-[11px] text-gray-300 mt-1">Hard Court</p>
+                <div class="mt-2 text-[11px] font-mono text-amber-300">Drills: 18:30</div>
+              </div>
+
+              <div class="bg-brand-deep/80 border border-brand-gold/20 p-3 rounded-lg">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold text-brand-gold">Court 4 (Hard)</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+                <p class="text-[11px] text-gray-300 mt-1">Hard Court</p>
+                <div class="mt-2 text-[11px] font-mono text-emerald-400">Available Now</div>
+              </div>
+
+              <div class="bg-brand-deep/80 border border-brand-gold/20 p-3 rounded-lg">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold text-brand-gold">Court 5 (Hard)</span>
+                  <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                </div>
+                <p class="text-[11px] text-gray-300 mt-1">DecoTurf Floodlit</p>
+                <div class="mt-2 text-[11px] font-mono text-blue-300">Night Match: 19:30</div>
+              </div>
+
+              <div class="bg-brand-deep/80 border border-brand-gold/20 p-3 rounded-lg">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold text-brand-gold">Court 6 (Hard)</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+                <p class="text-[11px] text-gray-300 mt-1">DecoTurf Floodlit</p>
+                <div class="mt-2 text-[11px] font-mono text-emerald-400">Available Now</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Bookings List -->
+          <div class="bg-brand-card border border-brand-gold/30 rounded-2xl p-5">
+            <h3 class="font-serif text-xl font-bold text-white mb-3 flex items-center justify-between">
+              <span>Active Scheduled Reservations</span>
+              <span id="bookingCountBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-brand-emerald text-brand-gold border border-brand-gold/30">0 Bookings</span>
+            </h3>
+
+            <div id="bookingsList" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: PLAYER PASSPORT & CR80 ID STUDIO    -->
+    <!-- ========================================== -->
+    <section id="tab-passport" class="tab-pane hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-brand-gold">Credentialing & Physical Card Foundry</span>
+          <h2 class="font-serif text-3xl sm:text-5xl font-bold text-white mt-1">Player Passport & CR80 ID</h2>
+          <p class="text-gray-300 text-sm mt-2 max-w-2xl">
+            Calibrate your official NTRP & UTR ratings, adjust stroke telemetry, and output an ISO 7810 CR80 physical card ready for wallet print or digital gate verification.
+          </p>
+        </div>
+        <!-- Card Theme Switcher -->
+        <div class="flex items-center gap-2 p-1.5 bg-brand-card rounded-xl border border-brand-gold/30 self-start md:self-auto">
+          <span class="text-xs font-mono text-gray-400 px-2">Theme:</span>
+          <button onclick="setCardTheme('obsidian')" id="btnThemeObsidian" class="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-brand-emerald text-brand-gold border border-brand-gold/40">
+            Obsidian Forest
+          </button>
+          <button onclick="setCardTheme('white')" id="btnThemeWhite" class="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-gray-400 hover:text-white">
+            Championship White
+          </button>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- CARD PREVIEW & 3D INTERACTIVE FLIP (Left) -->
+        <div class="lg:col-span-6 flex flex-col items-center">
+          
+          <!-- Card Face Switcher Tabs -->
+          <div class="flex items-center gap-2 p-1.5 bg-brand-card rounded-xl border border-brand-gold/30 mb-2 text-xs font-mono">
+            <button type="button" onclick="showCardFace('front')" id="btnShowFront" class="px-4 py-1.5 rounded-lg font-bold bg-brand-emerald text-brand-gold border border-brand-gold/40 transition">
+              🪪 View Front
+            </button>
+            <button type="button" onclick="showCardFace('back')" id="btnShowBack" class="px-4 py-1.5 rounded-lg font-bold text-gray-300 hover:text-white transition flex items-center gap-1.5">
+              <span>📊 View Back (Barcode & Details)</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            </button>
+            <button type="button" onclick="toggleCardFlip()" class="px-3 py-1.5 rounded-lg text-brand-gold hover:text-white transition" title="Flip Card">
+              ⟲ Flip
+            </button>
+          </div>
+
+          <div class="perspective-1000 w-full flex justify-center py-2">
+            
+            <!-- FLIPPABLE CR80 CARD CONTAINER -->
+            <div id="cr80Container" class="card-preserve-3d cr80-card relative cursor-pointer select-none" onclick="toggleCardFlip()">
+              
+              <!-- CARD FRONT -->
+              <div id="cardFront" class="absolute inset-0 backface-hidden p-4 sm:p-5 flex flex-col justify-between bg-gradient-to-br from-brand-forest via-brand-emerald to-brand-deep text-brand-parchment border border-brand-gold/40">
+                
+                <!-- Front Header -->
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <!-- Mini Crest -->
+                    <div class="w-9 h-9 rounded-full bg-brand-deep border border-brand-gold overflow-hidden flex items-center justify-center shadow shrink-0">
+                      <img src="./assets/logo.jpeg" alt="Club Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                      <div class="font-serif text-sm sm:text-base font-bold tracking-wider gold-gradient-text">NNPC CUBHOUSE</div>
+                      <div class="text-[9px] font-mono text-gray-300 uppercase tracking-widest">Kaduna • Est. 1978</div>
+                    </div>
+                  </div>
+                  <!-- Smart Chip Graphic / Hologram Badge -->
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-6 rounded bg-gradient-to-tr from-amber-300 via-amber-100 to-amber-400 border border-amber-600/50 shadow-inner flex flex-col justify-between p-1">
+                      <div class="w-full h-[1px] bg-amber-800/40"></div>
+                      <div class="w-full h-[1px] bg-amber-800/40"></div>
+                      <div class="w-full h-[1px] bg-amber-800/40"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Front Center: Photo + Player Details -->
+                <div class="flex items-center gap-3.5 my-auto">
+                  <!-- Photo Avatar -->
+                  <div class="relative shrink-0">
+                    <img id="cardDisplayPhoto" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" alt="Member Portrait" class="w-16 h-20 sm:w-20 sm:h-24 rounded-lg object-cover border-2 border-brand-gold shadow-md">
+                    <span id="cardClearanceIndicator" class="absolute -bottom-1.5 -right-1.5 w-4 h-4 rounded-full bg-emerald-500 border-2 border-brand-deep" title="Dues Cleared"></span>
+                  </div>
+
+                  <!-- Name and Ratings -->
+                  <div class="flex-grow min-w-0">
+                    <div id="cardDisplayName" class="font-serif text-lg sm:text-2xl font-bold truncate text-white leading-tight">
+                      Victor Benedict
+                    </div>
+                    <div class="text-[10px] sm:text-xs font-mono text-brand-gold-light tracking-wide mt-0.5">
+                      TIER: <span id="cardDisplayTier" class="font-bold text-amber-300">HERITAGE PATRON</span>
+                    </div>
+
+                    <div class="mt-2 grid grid-cols-2 gap-2 text-left">
+                      <div class="bg-brand-deep/60 px-2 py-1 rounded border border-brand-gold/20">
+                        <span class="text-[9px] font-mono text-gray-400 block uppercase">NTRP Rating</span>
+                        <span id="cardDisplayNTRP" class="text-xs sm:text-sm font-mono font-bold text-brand-gold">4.5 Verified</span>
+                      </div>
+                      <div class="bg-brand-deep/60 px-2 py-1 rounded border border-brand-gold/20">
+                        <span class="text-[9px] font-mono text-gray-400 block uppercase">UTR Calibrated</span>
+                        <span id="cardDisplayUTR" class="text-xs sm:text-sm font-mono font-bold text-emerald-400">8.42</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Front Footer -->
+                <div class="flex items-end justify-between border-t border-brand-gold/20 pt-2 text-[9px] sm:text-[10px] font-mono text-gray-300">
+                  <div>
+                    <span class="text-gray-400 block text-[8px]">MEMBER NO.</span>
+                    <span id="cardDisplayId" class="text-brand-gold font-bold">NNPC-KD-2026-084</span>
+                  </div>
+                  <div class="text-center">
+                    <span class="text-gray-400 block text-[8px]">CHAPTER</span>
+                    <span class="text-white">NNPC QTRS SABO</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-gray-400 block text-[8px]">VALID THROUGH</span>
+                    <span id="cardDisplayExpiry" class="text-amber-300 font-bold">12 / 2027</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- CARD BACK -->
+              <div id="cardBack" class="absolute inset-0 backface-hidden rotate-y-180 p-3 sm:p-3.5 flex flex-col justify-between bg-gradient-to-br from-brand-deep via-brand-forest to-brand-emerald text-brand-parchment border border-brand-gold/40">
+                
+                <!-- Back Magnetic Stripe & Security Track -->
+                <div class="w-full bg-black/90 h-5 sm:h-6 -mx-3.5 -mt-3.5 mb-1.5 flex items-center justify-between px-4">
+                  <div class="w-3/4 h-2 bg-gradient-to-r from-gray-700 via-gray-900 to-gray-700 rounded-sm"></div>
+                  <span class="text-[7px] sm:text-[8px] font-mono text-brand-gold uppercase tracking-widest">ISO 7810</span>
+                </div>
+
+                <!-- ALL MEMBER INFORMATION ENCODED INTO BARCODE -->
+                <div class="bg-white rounded-lg p-2 border-2 border-brand-gold shadow-md text-black flex-grow flex flex-col justify-between my-1">
+                  <div class="flex items-center justify-between text-[7px] sm:text-[8px] font-mono text-gray-700 font-bold uppercase mb-0.5 px-0.5">
+                    <span>SECURITY BARCODE • ENCODED MEMBER DATA</span>
+                    <span id="barcodeStatusTag" class="text-emerald-700 font-bold">● VERIFIED</span>
+                  </div>
+                  
+                  <!-- Full-Height Barcode Vector Container -->
+                  <div id="cardBarcodeSvgContainer" class="w-full h-14 sm:h-16 flex items-center justify-center overflow-hidden bg-white my-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 628 42" class="w-full h-full" preserveAspectRatio="none"><rect x="4" y="0" width="2" height="42" fill="#000000"/><rect x="6" y="0" width="2" height="42" fill="#000000"/><rect x="10" y="0" width="2" height="42" fill="#000000"/><rect x="16" y="0" width="2" height="42" fill="#000000"/><rect x="26" y="0" width="2" height="42" fill="#000000"/><rect x="30" y="0" width="2" height="42" fill="#000000"/><rect x="32" y="0" width="2" height="42" fill="#000000"/><rect x="38" y="0" width="2" height="42" fill="#000000"/><rect x="40" y="0" width="2" height="42" fill="#000000"/><rect x="42" y="0" width="2" height="42" fill="#000000"/><rect x="48" y="0" width="2" height="42" fill="#000000"/><rect x="54" y="0" width="2" height="42" fill="#000000"/><rect x="56" y="0" width="2" height="42" fill="#000000"/><rect x="60" y="0" width="2" height="42" fill="#000000"/><rect x="62" y="0" width="2" height="42" fill="#000000"/><rect x="64" y="0" width="2" height="42" fill="#000000"/><rect x="70" y="0" width="2" height="42" fill="#000000"/><rect x="72" y="0" width="2" height="42" fill="#000000"/><rect x="74" y="0" width="2" height="42" fill="#000000"/><rect x="80" y="0" width="2" height="42" fill="#000000"/><rect x="86" y="0" width="2" height="42" fill="#000000"/><rect x="88" y="0" width="2" height="42" fill="#000000"/><rect x="92" y="0" width="2" height="42" fill="#000000"/><rect x="98" y="0" width="2" height="42" fill="#000000"/><rect x="100" y="0" width="2" height="42" fill="#000000"/><rect x="102" y="0" width="2" height="42" fill="#000000"/><rect x="106" y="0" width="2" height="42" fill="#000000"/><rect x="108" y="0" width="2" height="42" fill="#000000"/><rect x="114" y="0" width="2" height="42" fill="#000000"/><rect x="116" y="0" width="2" height="42" fill="#000000"/><rect x="122" y="0" width="2" height="42" fill="#000000"/><rect x="126" y="0" width="2" height="42" fill="#000000"/><rect x="128" y="0" width="2" height="42" fill="#000000"/><rect x="130" y="0" width="2" height="42" fill="#000000"/><rect x="136" y="0" width="2" height="42" fill="#000000"/><rect x="138" y="0" width="2" height="42" fill="#000000"/><rect x="140" y="0" width="2" height="42" fill="#000000"/><rect x="146" y="0" width="2" height="42" fill="#000000"/><rect x="150" y="0" width="2" height="42" fill="#000000"/><rect x="152" y="0" width="2" height="42" fill="#000000"/><rect x="158" y="0" width="2" height="42" fill="#000000"/><rect x="160" y="0" width="2" height="42" fill="#000000"/><rect x="166" y="0" width="2" height="42" fill="#000000"/><rect x="168" y="0" width="2" height="42" fill="#000000"/><rect x="172" y="0" width="2" height="42" fill="#000000"/><rect x="180" y="0" width="2" height="42" fill="#000000"/><rect x="182" y="0" width="2" height="42" fill="#000000"/><rect x="186" y="0" width="2" height="42" fill="#000000"/><rect x="188" y="0" width="2" height="42" fill="#000000"/><rect x="194" y="0" width="2" height="42" fill="#000000"/><rect x="196" y="0" width="2" height="42" fill="#000000"/><rect x="202" y="0" width="2" height="42" fill="#000000"/><rect x="206" y="0" width="2" height="42" fill="#000000"/><rect x="208" y="0" width="2" height="42" fill="#000000"/><rect x="216" y="0" width="2" height="42" fill="#000000"/><rect x="218" y="0" width="2" height="42" fill="#000000"/><rect x="224" y="0" width="2" height="42" fill="#000000"/><rect x="232" y="0" width="2" height="42" fill="#000000"/><rect x="234" y="0" width="2" height="42" fill="#000000"/><rect x="238" y="0" width="2" height="42" fill="#000000"/><rect x="240" y="0" width="2" height="42" fill="#000000"/><rect x="246" y="0" width="2" height="42" fill="#000000"/><rect x="252" y="0" width="2" height="42" fill="#000000"/><rect x="254" y="0" width="2" height="42" fill="#000000"/><rect x="262" y="0" width="2" height="42" fill="#000000"/><rect x="264" y="0" width="2" height="42" fill="#000000"/><rect x="268" y="0" width="2" height="42" fill="#000000"/><rect x="272" y="0" width="2" height="42" fill="#000000"/><rect x="274" y="0" width="2" height="42" fill="#000000"/><rect x="276" y="0" width="2" height="42" fill="#000000"/><rect x="280" y="0" width="2" height="42" fill="#000000"/><rect x="282" y="0" width="2" height="42" fill="#000000"/><rect x="290" y="0" width="2" height="42" fill="#000000"/><rect x="298" y="0" width="2" height="42" fill="#000000"/><rect x="300" y="0" width="2" height="42" fill="#000000"/><rect x="304" y="0" width="2" height="42" fill="#000000"/><rect x="312" y="0" width="2" height="42" fill="#000000"/><rect x="314" y="0" width="2" height="42" fill="#000000"/><rect x="320" y="0" width="2" height="42" fill="#000000"/><rect x="322" y="0" width="2" height="42" fill="#000000"/><rect x="328" y="0" width="2" height="42" fill="#000000"/><rect x="334" y="0" width="2" height="42" fill="#000000"/><rect x="340" y="0" width="2" height="42" fill="#000000"/><rect x="348" y="0" width="2" height="42" fill="#000000"/><rect x="350" y="0" width="2" height="42" fill="#000000"/><rect x="356" y="0" width="2" height="42" fill="#000000"/><rect x="358" y="0" width="2" height="42" fill="#000000"/><rect x="362" y="0" width="2" height="42" fill="#000000"/><rect x="364" y="0" width="2" height="42" fill="#000000"/><rect x="370" y="0" width="2" height="42" fill="#000000"/><rect x="372" y="0" width="2" height="42" fill="#000000"/><rect x="378" y="0" width="2" height="42" fill="#000000"/><rect x="382" y="0" width="2" height="42" fill="#000000"/><rect x="384" y="0" width="2" height="42" fill="#000000"/><rect x="386" y="0" width="2" height="42" fill="#000000"/><rect x="392" y="0" width="2" height="42" fill="#000000"/><rect x="394" y="0" width="2" height="42" fill="#000000"/><rect x="400" y="0" width="2" height="42" fill="#000000"/><rect x="406" y="0" width="2" height="42" fill="#000000"/><rect x="410" y="0" width="2" height="42" fill="#000000"/><rect x="412" y="0" width="2" height="42" fill="#000000"/><rect x="422" y="0" width="2" height="42" fill="#000000"/><rect x="424" y="0" width="2" height="42" fill="#000000"/><rect x="428" y="0" width="2" height="42" fill="#000000"/><rect x="438" y="0" width="2" height="42" fill="#000000"/><rect x="444" y="0" width="2" height="42" fill="#000000"/><rect x="454" y="0" width="2" height="42" fill="#000000"/><rect x="458" y="0" width="2" height="42" fill="#000000"/><rect x="460" y="0" width="2" height="42" fill="#000000"/><rect x="466" y="0" width="2" height="42" fill="#000000"/><rect x="470" y="0" width="2" height="42" fill="#000000"/><rect x="480" y="0" width="2" height="42" fill="#000000"/><rect x="482" y="0" width="2" height="42" fill="#000000"/><rect x="488" y="0" width="2" height="42" fill="#000000"/><rect x="490" y="0" width="2" height="42" fill="#000000"/><rect x="500" y="0" width="2" height="42" fill="#000000"/><rect x="504" y="0" width="2" height="42" fill="#000000"/><rect x="510" y="0" width="2" height="42" fill="#000000"/><rect x="512" y="0" width="2" height="42" fill="#000000"/><rect x="516" y="0" width="2" height="42" fill="#000000"/><rect x="522" y="0" width="2" height="42" fill="#000000"/><rect x="524" y="0" width="2" height="42" fill="#000000"/><rect x="532" y="0" width="2" height="42" fill="#000000"/><rect x="534" y="0" width="2" height="42" fill="#000000"/><rect x="542" y="0" width="2" height="42" fill="#000000"/><rect x="546" y="0" width="2" height="42" fill="#000000"/><rect x="554" y="0" width="2" height="42" fill="#000000"/><rect x="560" y="0" width="2" height="42" fill="#000000"/><rect x="562" y="0" width="2" height="42" fill="#000000"/><rect x="572" y="0" width="2" height="42" fill="#000000"/><rect x="576" y="0" width="2" height="42" fill="#000000"/><rect x="578" y="0" width="2" height="42" fill="#000000"/><rect x="588" y="0" width="2" height="42" fill="#000000"/><rect x="594" y="0" width="2" height="42" fill="#000000"/><rect x="598" y="0" width="2" height="42" fill="#000000"/><rect x="600" y="0" width="2" height="42" fill="#000000"/><rect x="608" y="0" width="2" height="42" fill="#000000"/><rect x="610" y="0" width="2" height="42" fill="#000000"/><rect x="612" y="0" width="2" height="42" fill="#000000"/><rect x="616" y="0" width="2" height="42" fill="#000000"/><rect x="620" y="0" width="2" height="42" fill="#000000"/><rect x="622" y="0" width="2" height="42" fill="#000000"/></svg>
+                  </div>
+                  
+                  <div class="flex items-center justify-between text-[7px] sm:text-[8px] font-mono text-gray-900 font-bold tracking-wider px-0.5 border-t border-gray-200 pt-1">
+                    <span id="barcodeEncodedString">NNPC-KD-2026-084 • VICTOR BENEDICT</span>
+                    <span id="barcodeOwnerPhoneDisplay">+234 (0) 803 555 0192</span>
+                  </div>
+                </div>
+
+                <!-- DIRECT LINK TO PLAYER PROFILE -->
+                <div class="mt-1">
+                  <button type="button" onclick="openPlayerProfileModal()" class="w-full py-1.5 px-2.5 rounded-lg bg-brand-deep/95 border border-brand-gold/70 text-brand-gold hover:bg-brand-emerald hover:border-brand-gold text-[8px] sm:text-[9px] font-mono flex items-center justify-between group transition shadow">
+                    <span class="flex items-center gap-1.5 truncate">
+                      <svg class="w-3.5 h-3.5 text-brand-gold shrink-0 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      <span id="cardBackProfileLink" class="text-gray-200 group-hover:text-white truncate">nnpc-kaduna.club/player/NNPC-KD-2026-084</span>
+                    </span>
+                    <span class="text-[8px] uppercase tracking-wider text-emerald-400 font-bold shrink-0 ml-2 group-hover:underline flex items-center gap-1">
+                      View Player Profile &rarr;
+                    </span>
+                  </button>
+                </div>
+
+                <!-- Back Signature & Seal -->
+                <div class="flex items-end justify-between border-t border-brand-gold/30 pt-1 text-[7px] sm:text-[8px] font-mono">
+                  <div>
+                    <span class="text-gray-400 block text-[6px] sm:text-[7px]">CARDHOLDER SIGNATURE</span>
+                    <span id="cardBackSignature" class="font-serif italic text-xs text-brand-gold-light leading-none">Victor Benedict</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-brand-gold uppercase tracking-wider font-bold block text-[6px] sm:text-[7px]">OFFICIAL CLUB SECRETARY</span>
+                    <span class="text-emerald-400 text-[6px] sm:text-[7px]">NNPC QUARTERS SABO</span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <p class="text-xs font-mono text-gray-400 mt-2 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+            Click card to flip between Front and Back verification view.
+          </p>
+
+          <!-- Card Action Buttons -->
+          <div class="flex flex-wrap gap-3 mt-6 justify-center">
+            <button type="button" onclick="toggleCardFlip()" class="px-5 py-2.5 rounded-lg bg-brand-emerald border-2 border-brand-gold text-brand-gold font-bold font-mono text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              Flip Card &bull; View Barcode & Details
+            </button>
+            <button type="button" onclick="triggerPrintCR80()" class="px-5 py-2.5 rounded-lg bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-semibold font-mono text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+              Print CR80 Card Sheet
+            </button>
+            <button type="button" onclick="downloadCardJSON()" class="px-4 py-2.5 rounded-lg bg-brand-forest border border-brand-gold/40 text-brand-gold-light font-mono text-xs uppercase tracking-wider hover:bg-brand-emerald transition flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+              Export Credential
+            </button>
+          </div>
+
+          <!-- Permanent Live Security Barcode Telemetry Readout Panel -->
+          <div class="w-full max-w-[428px] mt-6 bg-brand-deep rounded-2xl border-2 border-brand-gold/40 p-4 shadow-xl text-xs font-mono">
+            <div class="flex items-center justify-between border-b border-brand-gold/20 pb-2 mb-3">
+              <span class="text-brand-gold font-bold uppercase tracking-wider flex items-center gap-2">
+                <svg class="w-4 h-4 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                Digital Gate Barcode Pass
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-500/30">SCANNER ACTIVE</span>
+            </div>
+
+            <!-- Crisp High-Contrast Barcode Box -->
+            <div class="bg-white rounded-lg p-3 text-black border border-gray-300 shadow-inner">
+              <div class="flex justify-between text-[8px] font-bold text-gray-500 uppercase tracking-widest mb-1">
+                <span>CODE-128 SECURITY TELEMETRY</span>
+                <span>NNPC TENNIS CLUB KADUNA</span>
+              </div>
+              <div id="telemetryBarcodeSvg" class="w-full h-10 flex items-center justify-center overflow-hidden bg-white">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 628 36" class="w-full h-full" preserveAspectRatio="none"><rect x="4" y="0" width="2" height="36" fill="#000000"/><rect x="6" y="0" width="2" height="36" fill="#000000"/><rect x="10" y="0" width="2" height="36" fill="#000000"/><rect x="16" y="0" width="2" height="36" fill="#000000"/><rect x="26" y="0" width="2" height="36" fill="#000000"/><rect x="30" y="0" width="2" height="36" fill="#000000"/><rect x="32" y="0" width="2" height="36" fill="#000000"/><rect x="38" y="0" width="2" height="36" fill="#000000"/><rect x="40" y="0" width="2" height="36" fill="#000000"/><rect x="42" y="0" width="2" height="36" fill="#000000"/><rect x="48" y="0" width="2" height="36" fill="#000000"/><rect x="54" y="0" width="2" height="36" fill="#000000"/><rect x="56" y="0" width="2" height="36" fill="#000000"/><rect x="60" y="0" width="2" height="36" fill="#000000"/><rect x="62" y="0" width="2" height="36" fill="#000000"/><rect x="64" y="0" width="2" height="36" fill="#000000"/><rect x="70" y="0" width="2" height="36" fill="#000000"/><rect x="72" y="0" width="2" height="36" fill="#000000"/><rect x="74" y="0" width="2" height="36" fill="#000000"/><rect x="80" y="0" width="2" height="36" fill="#000000"/><rect x="86" y="0" width="2" height="36" fill="#000000"/><rect x="88" y="0" width="2" height="36" fill="#000000"/><rect x="92" y="0" width="2" height="36" fill="#000000"/><rect x="98" y="0" width="2" height="36" fill="#000000"/><rect x="100" y="0" width="2" height="36" fill="#000000"/><rect x="102" y="0" width="2" height="36" fill="#000000"/><rect x="106" y="0" width="2" height="36" fill="#000000"/><rect x="108" y="0" width="2" height="36" fill="#000000"/><rect x="114" y="0" width="2" height="36" fill="#000000"/><rect x="116" y="0" width="2" height="36" fill="#000000"/><rect x="122" y="0" width="2" height="36" fill="#000000"/><rect x="126" y="0" width="2" height="36" fill="#000000"/><rect x="128" y="0" width="2" height="36" fill="#000000"/><rect x="130" y="0" width="2" height="36" fill="#000000"/><rect x="136" y="0" width="2" height="36" fill="#000000"/><rect x="138" y="0" width="2" height="36" fill="#000000"/><rect x="140" y="0" width="2" height="36" fill="#000000"/><rect x="146" y="0" width="2" height="36" fill="#000000"/><rect x="150" y="0" width="2" height="36" fill="#000000"/><rect x="152" y="0" width="2" height="36" fill="#000000"/><rect x="158" y="0" width="2" height="36" fill="#000000"/><rect x="160" y="0" width="2" height="36" fill="#000000"/><rect x="166" y="0" width="2" height="36" fill="#000000"/><rect x="168" y="0" width="2" height="36" fill="#000000"/><rect x="172" y="0" width="2" height="36" fill="#000000"/><rect x="180" y="0" width="2" height="36" fill="#000000"/><rect x="182" y="0" width="2" height="36" fill="#000000"/><rect x="186" y="0" width="2" height="36" fill="#000000"/><rect x="188" y="0" width="2" height="36" fill="#000000"/><rect x="194" y="0" width="2" height="36" fill="#000000"/><rect x="196" y="0" width="2" height="36" fill="#000000"/><rect x="202" y="0" width="2" height="36" fill="#000000"/><rect x="206" y="0" width="2" height="36" fill="#000000"/><rect x="208" y="0" width="2" height="36" fill="#000000"/><rect x="216" y="0" width="2" height="36" fill="#000000"/><rect x="218" y="0" width="2" height="36" fill="#000000"/><rect x="224" y="0" width="2" height="36" fill="#000000"/><rect x="232" y="0" width="2" height="36" fill="#000000"/><rect x="234" y="0" width="2" height="36" fill="#000000"/><rect x="238" y="0" width="2" height="36" fill="#000000"/><rect x="240" y="0" width="2" height="36" fill="#000000"/><rect x="246" y="0" width="2" height="36" fill="#000000"/><rect x="252" y="0" width="2" height="36" fill="#000000"/><rect x="254" y="0" width="2" height="36" fill="#000000"/><rect x="262" y="0" width="2" height="36" fill="#000000"/><rect x="264" y="0" width="2" height="36" fill="#000000"/><rect x="268" y="0" width="2" height="36" fill="#000000"/><rect x="272" y="0" width="2" height="36" fill="#000000"/><rect x="274" y="0" width="2" height="36" fill="#000000"/><rect x="276" y="0" width="2" height="36" fill="#000000"/><rect x="280" y="0" width="2" height="36" fill="#000000"/><rect x="282" y="0" width="2" height="36" fill="#000000"/><rect x="290" y="0" width="2" height="36" fill="#000000"/><rect x="298" y="0" width="2" height="36" fill="#000000"/><rect x="300" y="0" width="2" height="36" fill="#000000"/><rect x="304" y="0" width="2" height="36" fill="#000000"/><rect x="312" y="0" width="2" height="36" fill="#000000"/><rect x="314" y="0" width="2" height="36" fill="#000000"/><rect x="320" y="0" width="2" height="36" fill="#000000"/><rect x="322" y="0" width="2" height="36" fill="#000000"/><rect x="328" y="0" width="2" height="36" fill="#000000"/><rect x="334" y="0" width="2" height="36" fill="#000000"/><rect x="340" y="0" width="2" height="36" fill="#000000"/><rect x="348" y="0" width="2" height="36" fill="#000000"/><rect x="350" y="0" width="2" height="36" fill="#000000"/><rect x="356" y="0" width="2" height="36" fill="#000000"/><rect x="358" y="0" width="2" height="36" fill="#000000"/><rect x="362" y="0" width="2" height="36" fill="#000000"/><rect x="364" y="0" width="2" height="36" fill="#000000"/><rect x="370" y="0" width="2" height="36" fill="#000000"/><rect x="372" y="0" width="2" height="36" fill="#000000"/><rect x="378" y="0" width="2" height="36" fill="#000000"/><rect x="382" y="0" width="2" height="36" fill="#000000"/><rect x="384" y="0" width="2" height="36" fill="#000000"/><rect x="386" y="0" width="2" height="36" fill="#000000"/><rect x="392" y="0" width="2" height="36" fill="#000000"/><rect x="394" y="0" width="2" height="36" fill="#000000"/><rect x="400" y="0" width="2" height="36" fill="#000000"/><rect x="406" y="0" width="2" height="36" fill="#000000"/><rect x="410" y="0" width="2" height="36" fill="#000000"/><rect x="412" y="0" width="2" height="36" fill="#000000"/><rect x="422" y="0" width="2" height="36" fill="#000000"/><rect x="424" y="0" width="2" height="36" fill="#000000"/><rect x="428" y="0" width="2" height="36" fill="#000000"/><rect x="438" y="0" width="2" height="36" fill="#000000"/><rect x="444" y="0" width="2" height="36" fill="#000000"/><rect x="454" y="0" width="2" height="36" fill="#000000"/><rect x="458" y="0" width="2" height="36" fill="#000000"/><rect x="460" y="0" width="2" height="36" fill="#000000"/><rect x="466" y="0" width="2" height="36" fill="#000000"/><rect x="470" y="0" width="2" height="36" fill="#000000"/><rect x="480" y="0" width="2" height="36" fill="#000000"/><rect x="482" y="0" width="2" height="36" fill="#000000"/><rect x="488" y="0" width="2" height="36" fill="#000000"/><rect x="490" y="0" width="2" height="36" fill="#000000"/><rect x="500" y="0" width="2" height="36" fill="#000000"/><rect x="504" y="0" width="2" height="36" fill="#000000"/><rect x="510" y="0" width="2" height="36" fill="#000000"/><rect x="512" y="0" width="2" height="36" fill="#000000"/><rect x="516" y="0" width="2" height="36" fill="#000000"/><rect x="522" y="0" width="2" height="36" fill="#000000"/><rect x="524" y="0" width="2" height="36" fill="#000000"/><rect x="532" y="0" width="2" height="36" fill="#000000"/><rect x="534" y="0" width="2" height="36" fill="#000000"/><rect x="542" y="0" width="2" height="36" fill="#000000"/><rect x="546" y="0" width="2" height="36" fill="#000000"/><rect x="554" y="0" width="2" height="36" fill="#000000"/><rect x="560" y="0" width="2" height="36" fill="#000000"/><rect x="562" y="0" width="2" height="36" fill="#000000"/><rect x="572" y="0" width="2" height="36" fill="#000000"/><rect x="576" y="0" width="2" height="36" fill="#000000"/><rect x="578" y="0" width="2" height="36" fill="#000000"/><rect x="588" y="0" width="2" height="36" fill="#000000"/><rect x="594" y="0" width="2" height="36" fill="#000000"/><rect x="598" y="0" width="2" height="36" fill="#000000"/><rect x="600" y="0" width="2" height="36" fill="#000000"/><rect x="608" y="0" width="2" height="36" fill="#000000"/><rect x="610" y="0" width="2" height="36" fill="#000000"/><rect x="612" y="0" width="2" height="36" fill="#000000"/><rect x="616" y="0" width="2" height="36" fill="#000000"/><rect x="620" y="0" width="2" height="36" fill="#000000"/><rect x="622" y="0" width="2" height="36" fill="#000000"/></svg>
+              </div>
+              <div class="flex justify-between text-[9px] font-bold text-gray-900 tracking-wider mt-1 border-t border-gray-200 pt-1">
+                <span id="telemetryBarcodeCode">NNPC-KD-2026-084</span>
+                <span id="telemetryBarcodePhone">+234 (0) 803 555 0192</span>
+              </div>
+            </div>
+
+            <!-- Encoded Telemetry Info Readout -->
+            <div class="grid grid-cols-2 gap-2 mt-3 text-[10px]">
+              <div class="bg-brand-card p-2 rounded border border-brand-gold/20">
+                <span class="text-gray-400 block text-[8px]">CARDHOLDER</span>
+                <span id="telemetryName" class="text-white font-bold">Victor Benedict</span>
+              </div>
+              <div class="bg-brand-card p-2 rounded border border-brand-gold/20">
+                <span class="text-gray-400 block text-[8px]">EMERGENCY CONTACT</span>
+                <span id="telemetryPhone" class="text-amber-300 font-bold">+234 (0) 803 555 0192</span>
+              </div>
+              <div class="col-span-2 bg-brand-card p-2 rounded border border-brand-gold/20">
+                <span class="text-gray-400 block text-[8px]">FACILITY & RESIDENCE</span>
+                <span id="telemetryAddress" class="text-gray-200">NNPC Quarters, Sabo, Kaduna</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PASSPORT TELEMETRY & RATINGS CALIBRATION SLIDERS (Right) -->
+        <div class="lg:col-span-6 bg-brand-card border border-brand-gold/30 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+          
+          <div>
+            <h3 class="font-serif text-2xl font-bold text-white">Player Stroke Telemetry & Profile</h3>
+            <p class="text-xs font-mono text-gray-400 mt-1">Calibrate your live parameters to update the CR80 card instantly.</p>
+          </div>
+
+          <!-- Name, Mobile & Address Input -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1">Full Member Name</label>
+              <input type="text" id="inputPlayerName" value="Victor Benedict" oninput="updatePassportLive()" class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1">Contact Mobile</label>
+              <input type="text" id="inputEmergency" value="+234 (0) 803 555 0192" oninput="updatePassportLive()" class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1">Member Address</label>
+              <input type="text" id="inputAddress" value="NNPC Quarters, Sabo, Kaduna" oninput="updatePassportLive()" class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+            </div>
+          </div>
+
+          <!-- Photo Uploader / Instant Presets -->
+          <div>
+            <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1.5">Portrait Photo (CR80 Standard)</label>
+            <div class="flex items-center gap-3">
+              <input type="file" id="portraitFileInput" accept="image/*" onchange="handlePortraitUpload(event)" class="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-mono file:bg-brand-emerald file:text-brand-gold hover:file:bg-brand-forest">
+              <span class="text-xs font-mono text-gray-500">or</span>
+              <button type="button" onclick="cycleSampleAvatar()" class="text-xs font-mono text-brand-gold hover:underline">
+                Cycle Club Avatar
+              </button>
+            </div>
+          </div>
+
+          <!-- Membership Tier -->
+          <div>
+            <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1.5">Membership Honor Tier</label>
+            <select id="selectTier" onchange="updatePassportLive()" class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+              <option value="HERITAGE PATRON">Heritage Patron (Full Access + Priority VIP)</option>
+              <option value="COMPETITOR DIVISION">Competitor Division (Tournament & Ladder)</option>
+              <option value="CLUB MEMBER">Club Member (Championship Hard Court)</option>
+              <option value="JUNIOR ACADEMY">Junior Academy Cadet</option>
+            </select>
+          </div>
+
+          <!-- Stroke Radar Sliders -->
+          <div class="space-y-4 pt-2 border-t border-brand-gold/20">
+            <span class="block text-xs font-mono uppercase tracking-wider text-brand-gold font-bold">Stroke Telemetry Calibration</span>
+            
+            <!-- Forehand Power -->
+            <div>
+              <div class="flex justify-between text-xs font-mono mb-1">
+                <span class="text-gray-300">Forehand Topspin & Depth</span>
+                <span id="labelForehand" class="text-brand-gold font-bold">88 / 100</span>
+              </div>
+              <input type="range" id="sliderForehand" min="50" max="99" value="88" oninput="updatePassportLive()" class="w-full accent-brand-gold bg-brand-deep h-1.5 rounded-lg cursor-pointer">
+            </div>
+
+            <!-- Backhand -->
+            <div>
+              <div class="flex justify-between text-xs font-mono mb-1">
+                <span class="text-gray-300">Backhand Stability & Slice</span>
+                <span id="labelBackhand" class="text-brand-gold font-bold">82 / 100</span>
+              </div>
+              <input type="range" id="sliderBackhand" min="50" max="99" value="82" oninput="updatePassportLive()" class="w-full accent-brand-gold bg-brand-deep h-1.5 rounded-lg cursor-pointer">
+            </div>
+
+            <!-- Serve Velocity -->
+            <div>
+              <div class="flex justify-between text-xs font-mono mb-1">
+                <span class="text-gray-300">First Serve Velocity (105–125 MPH)</span>
+                <span id="labelServe" class="text-brand-gold font-bold">114 MPH</span>
+              </div>
+              <input type="range" id="sliderServe" min="70" max="130" value="114" oninput="updatePassportLive()" class="w-full accent-brand-gold bg-brand-deep h-1.5 rounded-lg cursor-pointer">
+            </div>
+
+            <!-- Volley / Net -->
+            <div>
+              <div class="flex justify-between text-xs font-mono mb-1">
+                <span class="text-gray-300">Net Volley & Touch</span>
+                <span id="labelVolley" class="text-brand-gold font-bold">80 / 100</span>
+              </div>
+              <input type="range" id="sliderVolley" min="50" max="99" value="80" oninput="updatePassportLive()" class="w-full accent-brand-gold bg-brand-deep h-1.5 rounded-lg cursor-pointer">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: MEMBER LADDER & ROSTER              -->
+    <!-- ========================================== -->
+    <section id="tab-ladder" class="tab-pane hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-brand-gold">Competitive Ladder & Player Registry</span>
+          <h2 class="font-serif text-3xl sm:text-5xl font-bold text-white mt-1">NNPC Quarters Sabo Ladder & Roster</h2>
+          <p class="text-gray-300 text-sm mt-2 max-w-2xl">
+            Explore verified club members, challenge players to ladder rankings matches, and view official NTRP tiers.
+          </p>
+        </div>
+        
+        <!-- Search and Filter -->
+        <div class="flex flex-wrap items-center gap-3">
+          <input type="text" id="rosterSearch" oninput="filterRoster()" placeholder="Search player name or ranking..." class="bg-brand-card border border-brand-gold/30 rounded-lg px-3.5 py-2 text-xs font-mono text-white placeholder-gray-500 focus:outline-none focus:border-brand-gold">
+          <select id="rosterNtrpFilter" onchange="filterRoster()" class="bg-brand-card border border-brand-gold/30 rounded-lg px-3 py-2 text-xs font-mono text-brand-gold focus:outline-none">
+            <option value="ALL">All NTRP Ratings</option>
+            <option value="5.0">NTRP 5.0+ (Pro Division)</option>
+            <option value="4.5">NTRP 4.5 (Advanced)</option>
+            <option value="4.0">NTRP 4.0 (Intermediate)</option>
+            <option value="3.5">NTRP 3.5 (Club Competitive)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Member Roster Cards Grid -->
+      <div id="rosterGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Rendered dynamically via JS -->
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: MEDIA STUDIO                        -->
+    <!-- ========================================== -->
+    <section id="tab-media" class="tab-pane hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-brand-gold">Clubhouse Visual Archives</span>
+          <h2 class="font-serif text-3xl sm:text-5xl font-bold text-white mt-1">Media Studio & Gallery</h2>
+          <p class="text-gray-300 text-sm mt-2 max-w-2xl">
+            Match highlights, social tournament photography, and court videos uploaded by members of NNPC Tennis Club Kaduna.
+          </p>
+        </div>
+        
+        <!-- Upload Action Button -->
+        <button onclick="document.getElementById('mediaUploadInput').click()" class="px-5 py-2.5 rounded-lg bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-semibold font-mono text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition flex items-center gap-2 self-start sm:self-auto">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+          Upload Match Media
+        </button>
+        <input type="file" id="mediaUploadInput" accept="image/*,video/*" onchange="handleMediaUpload(event)" class="hidden">
+      </div>
+
+      <!-- Media Grid -->
+      <div id="mediaGallery" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Populated via JS -->
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 6: DUES & TREASURY PORTAL              -->
+    <!-- ========================================== -->
+    <section id="tab-dues" class="tab-pane hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="font-mono text-xs uppercase tracking-widest text-brand-gold">Clubhouse Governance & Dues Treasury</span>
+        <h2 class="font-serif text-3xl sm:text-5xl font-bold text-white mt-1">Membership Dues & Clearance</h2>
+        <p class="text-gray-300 text-sm mt-2">
+          Keep your membership standing active to renew court reservations, floodlight privileges, and validate your physical CR80 digital ID card.
+        </p>
+      </div>
+
+      <!-- Pricing Plans / Dues Tiers -->
+      <div class="grid md:grid-cols-3 gap-8 mb-16">
+        
+        <!-- Tier 1: Monthly Court Pass -->
+        <div class="bg-brand-card border border-brand-gold/30 rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-brand-gold transition shadow-xl">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-wider text-brand-gold px-2.5 py-1 rounded bg-brand-forest border border-brand-gold/20 inline-block mb-4">
+              Regular Access
+            </span>
+            <h3 class="font-serif text-2xl font-bold text-white">Monthly Court Pass</h3>
+            <p class="text-xs text-gray-400 mt-1 mb-6">Designed for active monthly social and practice players.</p>
+            
+            <div class="font-serif text-4xl font-bold text-white mb-6">
+              ₦15,000 <span class="text-xs font-mono text-gray-400 font-normal">/ month</span>
+            </div>
+
+            <ul class="space-y-3 text-xs text-gray-300 font-mono mb-8">
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Unlimited Hard Court Play</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Daylight Sessions (06:00–18:00)</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Digital Gate QR Clearance</li>
+              <li class="flex items-center gap-2 text-gray-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Priority Floodlight Booking</li>
+            </ul>
+          </div>
+
+          <button onclick="openPaymentModal('Monthly Court Pass', 15000, 30)" class="w-full py-3 rounded-lg bg-brand-forest border border-brand-gold/40 text-brand-gold-light hover:bg-brand-emerald font-mono uppercase tracking-wider text-xs font-semibold transition">
+            Renew for 30 Days
+          </button>
+        </div>
+
+        <!-- Tier 2: Quarterly Competitor (POPULAR) -->
+        <div class="bg-gradient-to-b from-brand-forest to-brand-card border-2 border-brand-gold rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-mono text-[10px] uppercase font-bold tracking-widest px-4 py-1 rounded-full shadow-md">
+            Most Popular
+          </div>
+          <div>
+            <span class="font-mono text-xs uppercase tracking-wider text-amber-300 px-2.5 py-1 rounded bg-brand-deep border border-brand-gold/40 inline-block mb-4">
+              Competitor Tier
+            </span>
+            <h3 class="font-serif text-2xl font-bold text-white">Quarterly Competitor</h3>
+            <p class="text-xs text-gray-400 mt-1 mb-6">Full tournament schedule, ladder ranking, and night lights.</p>
+            
+            <div class="font-serif text-4xl font-bold gold-gradient-text mb-6">
+              ₦40,000 <span class="text-xs font-mono text-gray-400 font-normal">/ quarter</span>
+            </div>
+
+            <ul class="space-y-3 text-xs text-gray-300 font-mono mb-8">
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> All Floodlit Hard Courts Unlimited</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Full Floodlit Play (Until 23:00)</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Ball Machine Practice Access</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Official CR80 Card Validation</li>
+            </ul>
+          </div>
+
+          <button onclick="openPaymentModal('Quarterly Competitor', 40000, 90)" class="w-full py-3.5 rounded-lg bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-semibold font-mono uppercase tracking-wider text-xs shadow-lg hover:scale-[1.02] transition">
+            Renew for 90 Days
+          </button>
+        </div>
+
+        <!-- Tier 3: Annual Heritage Patron -->
+        <div class="bg-brand-card border border-brand-gold/30 rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-brand-gold transition shadow-xl">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-wider text-brand-gold px-2.5 py-1 rounded bg-brand-forest border border-brand-gold/20 inline-block mb-4">
+              Distinguished Patron
+            </span>
+            <h3 class="font-serif text-2xl font-bold text-white">Annual Heritage Patron</h3>
+            <p class="text-xs text-gray-400 mt-1 mb-6">VIP locker room, priority booking, and club patron honors.</p>
+            
+            <div class="font-serif text-4xl font-bold text-white mb-6">
+              ₦150,000 <span class="text-xs font-mono text-gray-400 font-normal">/ year</span>
+            </div>
+
+            <ul class="space-y-3 text-xs text-gray-300 font-mono mb-8">
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 365 Days Unrestricted All Courts</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Permanent VIP Locker Suite</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 12 Guest Day-Pass Invitations</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Gold Embossed Physical CR80 Card</li>
+            </ul>
+          </div>
+
+          <button onclick="openPaymentModal('Annual Heritage Patron', 150000, 365)" class="w-full py-3 rounded-lg bg-brand-forest border border-brand-gold/40 text-brand-gold-light hover:bg-brand-emerald font-mono uppercase tracking-wider text-xs font-semibold transition">
+            Renew for 365 Days
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Treasury Receipts & Transaction Ledger -->
+      <div class="bg-brand-card border border-brand-gold/30 rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h3 class="font-serif text-2xl font-bold text-white">Treasury Ledger Receipts</h3>
+            <p class="text-xs font-mono text-gray-400">Verifiable clearance certificates & payment logs</p>
+          </div>
+          <span class="text-xs font-mono text-brand-gold">Official NNPC Club Treasury Kaduna</span>
+        </div>
+
+        <div id="receiptsLedger" class="space-y-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 7: ADMIN GOVERNANCE CONSOLE MODAL/VIEW -->
+    <!-- ========================================== -->
+    <section id="tab-admin" class="tab-pane hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      <div class="flex items-center justify-between mb-8 pb-4 border-b border-brand-gold/30">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-brand-gold">Executive Club Administration</span>
+          <h2 class="font-serif text-3xl sm:text-5xl font-bold text-white mt-1">Governance & Clearance Console</h2>
+          <p class="text-gray-300 text-sm mt-1">Update member card expiry dates, toggle dues status, and oversee reservations.</p>
+        </div>
+        <button onclick="switchTab('overview')" class="text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded bg-brand-forest border border-brand-gold/30 text-brand-gold">
+          &larr; Exit Admin
+        </button>
+      </div>
+
+      <!-- Member Governance Table -->
+      <div class="bg-brand-card border border-brand-gold/30 rounded-2xl p-6 shadow-xl overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <h3 class="font-serif text-2xl font-bold text-white">Member Credentials & Expiry Manager</h3>
+          <button onclick="addNewMemberPrompt()" class="px-3.5 py-1.5 rounded-lg bg-brand-emerald border border-brand-gold/40 text-brand-gold text-xs font-mono flex items-center gap-1.5">
+            + Register New Member
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-brand-deep/80 text-brand-gold border-b border-brand-gold/20 uppercase tracking-wider">
+              <tr>
+                <th class="py-3 px-4">Member ID</th>
+                <th class="py-3 px-4">Full Name</th>
+                <th class="py-3 px-4">NTRP / Tier</th>
+                <th class="py-3 px-4">Dues Clearance</th>
+                <th class="py-3 px-4">Card Expiry Date</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminMemberTable" class="divide-y divide-brand-gold/10">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODALS & OVERLAYS                          -->
+  <!-- ========================================== -->
+
+  <!-- 1. ADMIN PASSCODE AUTH MODAL -->
+  <div id="modalAdminAuth" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-brand-card border-2 border-brand-gold rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-full bg-brand-forest border border-brand-gold mx-auto flex items-center justify-center text-brand-gold mb-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        </div>
+        <h3 class="font-serif text-2xl font-bold text-white">Admin Console Access</h3>
+        <p class="text-xs font-mono text-gray-400 mt-1">Enter club administrative passcode to unlock governance controls.</p>
+        <p class="text-[10px] font-mono text-brand-gold/60 mt-1">(Default passcode: <b>nnpc2026</b>)</p>
+      </div>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1">Passcode</label>
+          <input type="password" id="adminPasscodeInput" required placeholder="••••••••" class="w-full bg-brand-deep border border-brand-gold/40 rounded-lg px-4 py-3 text-center text-lg text-white font-mono tracking-widest focus:outline-none focus:border-brand-gold">
+        </div>
+        <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-semibold font-mono uppercase tracking-wider text-xs shadow-lg hover:scale-105 transition">
+          Authenticate & Unlock
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. PAYMENT / DUES SETTLEMENT SIMULATOR MODAL -->
+  <div id="modalPayment" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-brand-card border-2 border-brand-gold rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+      <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-full bg-brand-forest border border-brand-gold mx-auto flex items-center justify-center text-brand-gold mb-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+        </div>
+        <h3 class="font-serif text-2xl font-bold text-white">Dues Settlement Checkout</h3>
+        <p id="payModalSubtitle" class="text-xs font-mono text-brand-gold-light mt-1">Annual Heritage Patron Renewal</p>
+      </div>
+
+      <div class="bg-brand-deep/80 rounded-xl p-4 border border-brand-gold/30 mb-6 space-y-2 text-xs font-mono">
+        <div class="flex justify-between">
+          <span class="text-gray-400">Beneficiary:</span>
+          <span class="text-white font-semibold">NNPC Tennis Club Kaduna Treasury</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400">Member Benefiting:</span>
+          <span id="payModalMemberName" class="text-brand-gold font-semibold">Victor Benedict</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400">Validity Extension:</span>
+          <span id="payModalDays" class="text-emerald-400 font-semibold">+365 Days</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t border-brand-gold/20 text-sm">
+          <span class="text-white font-bold">Total Payable:</span>
+          <span id="payModalAmount" class="text-brand-gold font-bold">₦150,000</span>
+        </div>
+      </div>
+
+      <form onsubmit="processPaymentSimulation(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-1">Select Payment Channel</label>
+          <select id="payChannel" class="w-full bg-brand-deep border border-brand-gold/30 rounded-lg px-3 py-2 text-xs font-mono text-white">
+            <option value="Direct Nigerian Bank Transfer (NIBSS Instant)">Direct Nigerian Bank Transfer (NIBSS Instant)</option>
+            <option value="Paystack Card / USSD">Paystack Card / USSD</option>
+            <option value="Kaduna Club Treasury POS">Clubhouse Front Desk POS Cashier</option>
+          </select>
+        </div>
+
+        <button type="submit" id="btnProcessPayment" class="w-full py-3.5 rounded-lg bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-semibold font-mono uppercase tracking-wider text-xs shadow-xl hover:scale-105 transition">
+          Simulate Instant Clearance & Issue Receipt
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. BOOKING CONFIRMATION MODAL -->
+  <div id="modalBookingSuccess" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-brand-card border-2 border-brand-gold rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-center">
+      <div class="w-14 h-14 rounded-full bg-emerald-950 border-2 border-emerald-400 mx-auto flex items-center justify-center text-emerald-400 mb-4">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+      </div>
+
+      <h3 class="font-serif text-2xl font-bold text-white">Court Reservation Confirmed</h3>
+      <p class="text-xs font-mono text-brand-gold mt-1">Official Kaduna Court Pass Issued</p>
+
+      <div id="bookingSuccessDetails" class="my-6 bg-brand-deep/80 rounded-xl p-4 border border-brand-gold/20 text-left text-xs font-mono space-y-2 text-gray-300">
+        <!-- Rendered via JS -->
+      </div>
+
+      <div class="flex gap-3">
+        <button onclick="closeBookingSuccessModal()" class="flex-1 py-2.5 rounded-lg bg-brand-forest border border-brand-gold/40 text-brand-gold-light font-mono text-xs uppercase tracking-wider hover:bg-brand-emerald">
+          Done
+        </button>
+        <button onclick="window.print()" class="flex-1 py-2.5 rounded-lg bg-brand-gold text-brand-deep font-mono text-xs font-bold uppercase tracking-wider hover:bg-brand-gold-light">
+          Print Pass
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. VERIFIED PLAYER PROFILE MODAL (ACCESSED VIA CARD BACK LINK) -->
+  <div id="modalPlayerProfile" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-brand-card border-2 border-brand-gold rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closePlayerProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-lg bg-brand-deep border border-brand-gold/30">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+
+      <!-- Profile Header -->
+      <div class="flex items-start gap-4 pb-5 border-b border-brand-gold/20">
+        <div class="relative shrink-0">
+          <img id="modalProfilePhoto" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" alt="Player Portrait" class="w-20 h-24 rounded-xl object-cover border-2 border-brand-gold shadow-md">
+          <span class="absolute -bottom-2 -right-2 px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/40">
+            VERIFIED
+          </span>
+        </div>
+        <div class="flex-grow min-w-0">
+          <h3 id="modalProfileName" class="font-serif text-2xl font-bold text-white truncate">Victor Benedict</h3>
+          <p id="modalProfileTier" class="text-xs font-mono text-brand-gold-light mt-0.5">HERITAGE PATRON</p>
+          <p id="modalProfileId" class="text-[11px] font-mono text-gray-400 mt-1">MEMBER ID: NNPC-KD-2026-084</p>
+          <div class="flex items-center gap-2 mt-2 text-xs font-mono">
+            <span class="px-2 py-0.5 rounded bg-brand-deep border border-brand-gold/30 text-brand-gold font-bold" id="modalProfileNtrp">NTRP: 4.5 Verified</span>
+            <span class="px-2 py-0.5 rounded bg-brand-deep border border-brand-gold/30 text-emerald-400 font-bold" id="modalProfileUtr">UTR: 8.42</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player Dossier Details -->
+      <div class="py-5 space-y-4 text-xs font-mono">
+        <!-- Contact & Location Readout -->
+        <div class="bg-brand-deep/80 rounded-xl p-4 border border-brand-gold/20 space-y-2">
+          <span class="block text-[10px] text-brand-gold uppercase tracking-wider font-bold">Player Registry & Contact Details</span>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Emergency Phone:</span>
+            <span id="modalProfilePhone" class="text-white font-bold">+234 (0) 803 555 0192</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Club Facility:</span>
+            <span class="text-gray-200">NNPC Tennis Club Kaduna</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Quarters Address:</span>
+            <span id="modalProfileAddress" class="text-gray-200">NNPC Quarters, Sabo, Kaduna</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Card Expiry Validity:</span>
+            <span id="modalProfileExpiry" class="text-amber-300 font-bold">12 / 2027</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Dues Treasury Standing:</span>
+            <span class="text-emerald-400 font-bold">● CLEARED & ACTIVE</span>
+          </div>
+        </div>
+
+        <!-- Stroke Telemetry Radar Breakdown -->
+        <div class="bg-brand-deep/80 rounded-xl p-4 border border-brand-gold/20 space-y-2.5">
+          <span class="block text-[10px] text-brand-gold uppercase tracking-wider font-bold">Stroke Telemetry Calibration</span>
+          <div class="space-y-2">
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-gray-400">Forehand Topspin</span>
+                <span id="modalProfileForehand" class="text-brand-gold font-bold">88 / 100</span>
+              </div>
+              <div class="w-full bg-brand-forest h-1.5 rounded-full overflow-hidden">
+                <div id="modalBarForehand" class="bg-brand-gold h-full rounded-full" style="width: 88%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-gray-400">Backhand Stability</span>
+                <span id="modalProfileBackhand" class="text-brand-gold font-bold">82 / 100</span>
+              </div>
+              <div class="w-full bg-brand-forest h-1.5 rounded-full overflow-hidden">
+                <div id="modalBarBackhand" class="bg-brand-gold h-full rounded-full" style="width: 82%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-gray-400">First Serve Velocity</span>
+                <span id="modalProfileServe" class="text-brand-gold font-bold">114 MPH</span>
+              </div>
+              <div class="w-full bg-brand-forest h-1.5 rounded-full overflow-hidden">
+                <div id="modalBarServe" class="bg-emerald-400 h-full rounded-full" style="width: 88%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-gray-400">Net Volley & Touch</span>
+                <span id="modalProfileVolley" class="text-brand-gold font-bold">80 / 100</span>
+              </div>
+              <div class="w-full bg-brand-forest h-1.5 rounded-full overflow-hidden">
+                <div id="modalBarVolley" class="bg-brand-gold h-full rounded-full" style="width: 80%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decoded Barcode Payload Data Box -->
+        <div class="bg-brand-forest/60 rounded-xl p-3 border border-brand-gold/30">
+          <div class="flex justify-between items-center text-[10px] text-gray-400 mb-1">
+            <span class="font-bold text-brand-gold uppercase">Raw Barcode Encoded String</span>
+            <span class="text-emerald-400 font-bold">CODE-128 COMPLIANT</span>
+          </div>
+          <div id="modalBarcodePayload" class="text-[9px] font-mono break-all text-gray-300 bg-brand-deep p-2 rounded border border-brand-gold/15">
+            NNPC-KD-2026-084|NAME:Victor Benedict|TEL:+2348035550192|LOC:NNPC Quarters, Sabo, Kaduna|TIER:HERITAGE PATRON|NTRP:4.5 Verified|UTR:8.42|CLEARED|https://nnpc-kaduna.club/player/NNPC-KD-2026-084
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex gap-3 pt-4 border-t border-brand-gold/20">
+        <button onclick="closePlayerProfileModal()" class="flex-1 py-2.5 rounded-lg bg-brand-forest border border-brand-gold/40 text-brand-gold font-mono text-xs uppercase tracking-wider hover:bg-brand-emerald">
+          Close Profile
+        </button>
+        <button onclick="switchTab('booking'); closePlayerProfileModal()" class="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-mono text-xs font-bold uppercase tracking-wider hover:opacity-90">
+          Book Court for Player
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <!-- 4. PRINTABLE AREA CONTAINER (FOR CR80 PRINTING) -->
+  <div id="printableArea" class="hidden">
+    <div class="max-w-2xl mx-auto p-8 text-black bg-white">
+      <div class="text-center border-b pb-4 mb-6">
+        <h1 class="text-2xl font-bold font-serif">NNPC TENNIS CLUB KADUNA</h1>
+        <p class="text-xs font-mono text-gray-600">Official ISO 7810 CR80 Credential Sheet • NNPC Quarters Sabo Chapter</p>
+      </div>
+
+      <!-- Side by Side CR80 Cut Sheet -->
+      <div class="flex flex-col sm:flex-row gap-6 justify-center items-center my-6">
+        
+        <!-- Print Front -->
+        <div class="w-[340px] h-[214px] rounded-xl border-2 border-dashed border-gray-400 p-4 bg-[#0F1E17] text-white flex flex-col justify-between relative shadow">
+          <div class="flex justify-between items-start">
+            <span class="font-serif font-bold text-amber-300 text-sm">NNPC CUBHOUSE KADUNA</span>
+            <span class="text-[9px] font-mono text-gray-300">CR80 FRONT</span>
+          </div>
+          <div class="flex gap-3 items-center">
+            <div class="w-16 h-20 bg-gray-800 rounded border border-amber-300 overflow-hidden">
+              <img id="printPhoto" src="" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <div id="printName" class="font-bold text-base font-serif text-white"></div>
+              <div id="printTier" class="text-[10px] font-mono text-amber-300"></div>
+              <div id="printNtrp" class="text-[10px] font-mono text-gray-300 mt-1"></div>
+            </div>
+          </div>
+          <div class="flex justify-between text-[9px] font-mono border-t border-amber-500/30 pt-1">
+            <span id="printId"></span>
+            <span id="printExpiry"></span>
+          </div>
+        </div>
+
+        <!-- Print Back with Barcode & Owner Info -->
+        <div class="w-[340px] h-[214px] rounded-xl border-2 border-dashed border-gray-400 p-3 bg-[#07100B] text-white flex flex-col justify-between relative shadow">
+          <div class="bg-black h-5 -mx-3 -mt-3"></div>
+          
+          <div class="bg-white rounded p-1.5 text-black">
+            <div id="printBarcodeSvg" class="w-full h-7 flex items-center justify-center overflow-hidden"></div>
+            <div id="printBarcodeText" class="text-[7px] font-mono text-center font-bold tracking-wider mt-0.5"></div>
+          </div>
+
+          <div class="bg-[#0F1E17] p-2 rounded text-[8px] font-mono space-y-0.5 border border-amber-600/30">
+            <div class="flex justify-between"><span class="text-gray-400">Cardholder:</span> <b id="printBackName" class="text-amber-300"></b></div>
+            <div class="flex justify-between"><span class="text-gray-400">Member ID:</span> <b id="printBackId" class="text-white"></b></div>
+            <div class="flex justify-between"><span class="text-gray-400">Contact:</span> <b id="printBackPhone" class="text-emerald-400"></b></div>
+            <div class="flex justify-between"><span class="text-gray-400">Address:</span> <span id="printBackAddress" class="text-gray-300">NNPC Quarters, Sabo, Kaduna</span></div>
+          </div>
+
+          <div class="text-[7px] font-mono border-t border-gray-700 pt-1 flex justify-between">
+            <span>OFFICIAL MEMBER BARCODE SEAL</span>
+            <span class="text-emerald-400">STATUS: CLEARED</span>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="text-[10px] font-mono text-center text-gray-500 mt-8 border-t pt-4">
+        Printed on <span id="printTimestamp"></span> • Cut along dashed guidelines for standard 85.6mm x 53.98mm wallet sizing.
+      </p>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- ========================================== -->
+  <!-- FOOTER                                     -->
+  <!-- ========================================== -->
+  <footer class="bg-brand-forest border-t border-brand-gold/30 mt-20 text-gray-400 text-xs font-mono py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-brand-deep border border-brand-gold overflow-hidden flex items-center justify-center shadow shrink-0">
+            <img src="./assets/logo.jpeg" alt="NNPC Tennis Club Logo" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <span class="font-serif font-bold text-sm text-brand-gold tracking-wider">NNPC CUBHOUSE KADUNA</span>
+            <p class="text-[10px] text-gray-400">NNPC Tennis Club • NNPC Quarters, Sabo, Kaduna State, Nigeria • Est. 1978</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-6 text-[11px]">
+          <a href="javascript:void(0)" onclick="switchTab('booking')" class="hover:text-brand-gold">Court Schedule</a>
+          <a href="javascript:void(0)" onclick="switchTab('passport')" class="hover:text-brand-gold">CR80 ID Studio</a>
+          <a href="javascript:void(0)" onclick="switchTab('dues')" class="hover:text-brand-gold">Dues Treasury</a>
+          <a href="javascript:void(0)" onclick="openAdminModal()" class="text-amber-400 hover:underline">Admin Login</a>
+        </div>
+
+        <div class="text-[10px] text-gray-500">
+          Self-contained Single-file Architecture &bull; LocalStorage Verified
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT LOGIC & STATE PERSISTENCE       -->
+  <!-- ========================================== -->
+  <script>
+    // --- DEFAULT INITIAL STATE SEEDS ---
+    const DEFAULT_MEMBERS = [
+      {
+        id: "NNPC-KD-2026-084",
+        name: "Victor Benedict",
+        ntrp: 4.5,
+        utr: 8.42,
+        tier: "HERITAGE PATRON",
+        duesCleared: true,
+        expiry: "2027-12-31",
+        photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+        emergency: "+234 (0) 803 555 0192",
+        forehand: 88,
+        backhand: 82,
+        serve: 114,
+        volley: 80,
+        hand: "Right-handed",
+        wins: 28,
+        losses: 6
+      },
+      {
+        id: "NNPC-KD-2026-012",
+        name: "Engr. Aliyu Mohammed",
+        ntrp: 5.0,
+        utr: 9.85,
+        tier: "HERITAGE PATRON",
+        duesCleared: true,
+        expiry: "2027-06-30",
+        photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+        emergency: "+234 (0) 802 341 8899",
+        forehand: 94,
+        backhand: 86,
+        serve: 121,
+        volley: 89,
+        hand: "Right-handed",
+        wins: 42,
+        losses: 4
+      },
+      {
+        id: "NNPC-KD-2026-029",
+        name: "Dr. Amina Yusuf",
+        ntrp: 4.0,
+        utr: 7.20,
+        tier: "COMPETITOR DIVISION",
+        duesCleared: true,
+        expiry: "2027-03-31",
+        photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+        emergency: "+234 (0) 809 111 2233",
+        forehand: 79,
+        backhand: 81,
+        serve: 98,
+        volley: 84,
+        hand: "Left-handed",
+        wins: 19,
+        losses: 11
+      },
+      {
+        id: "NNPC-KD-2026-055",
+        name: "Emeka Eze",
+        ntrp: 4.5,
+        utr: 8.60,
+        tier: "COMPETITOR DIVISION",
+        duesCleared: true,
+        expiry: "2027-08-31",
+        photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+        emergency: "+234 (0) 813 444 9900",
+        forehand: 86,
+        backhand: 78,
+        serve: 116,
+        volley: 75,
+        hand: "Right-handed",
+        wins: 24,
+        losses: 9
+      },
+      {
+        id: "NNPC-KD-2026-071",
+        name: "Farouk Bello",
+        ntrp: 3.5,
+        utr: 6.40,
+        tier: "CLUB MEMBER",
+        duesCleared: false,
+        expiry: "2026-10-15",
+        photo: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=400&q=80",
+        emergency: "+234 (0) 805 777 6622",
+        forehand: 70,
+        backhand: 68,
+        serve: 92,
+        volley: 65,
+        hand: "Right-handed",
+        wins: 11,
+        losses: 14
+      }
+    ];
+
+    const DEFAULT_BOOKINGS = [
+      {
+        id: "BK-101",
+        playerName: "Victor Benedict",
+        memberId: "NNPC-KD-2026-084",
+        court: "Court 1 (Hard)",
+        format: "Singles Match",
+        date: "2026-11-26",
+        time: "17:00 - 18:00",
+        type: "member"
+      },
+      {
+        id: "BK-102",
+        playerName: "Engr. Aliyu Mohammed",
+        memberId: "NNPC-KD-2026-012",
+        court: "Court 5 (Hard)",
+        format: "Floodlit Evening Singles",
+        date: "2026-11-26",
+        time: "19:30 - 20:30",
+        type: "member"
+      },
+      {
+        id: "BK-103",
+        playerName: "Tariq Ibrahim (Guest)",
+        memberId: "GUEST-KAD-94",
+        court: "Court 3 (Hard)",
+        format: "Open Partner Request",
+        date: "2026-11-26",
+        time: "18:30 - 19:30",
+        type: "guest"
+      }
+    ];
+
+    const DEFAULT_RECEIPTS = [
+      {
+        id: "TXN-NNPC-KD-94812",
+        date: "2026-11-20 16:42",
+        plan: "Annual Heritage Patron",
+        amount: "₦150,000",
+        member: "Victor Benedict",
+        channel: "Direct Nigerian Bank Transfer"
+      },
+      {
+        id: "TXN-NNPC-KD-93108",
+        date: "2026-11-14 11:20",
+        plan: "Quarterly Competitor",
+        amount: "₦40,000",
+        member: "Emeka Eze",
+        channel: "Paystack Card / USSD"
+      }
+    ];
+
+    const DEFAULT_MEDIA = [
+      {
+        id: "m-1",
+        title: "Kaduna Floodlight Championship Finals",
+        url: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80",
+        type: "image",
+        author: "Coach Ibrahim",
+        likes: 38
+      },
+      {
+        id: "m-2",
+        title: "Hard Court Court Morning Baseline Rally",
+        url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=800&q=80",
+        type: "image",
+        author: "Victor Benedict",
+        likes: 45
+      },
+      {
+        id: "m-3",
+        title: "Saturday Social Mixer & Trophy Showcase",
+        url: "https://images.unsplash.com/photo-1560012057-4372e14c5085?auto=format&fit=crop&w=800&q=80",
+        type: "image",
+        author: "Club Secretary",
+        likes: 29
+      }
+    ];
+
+    // --- APPLICATION STATE LOADERS ---
+    let members = JSON.parse(localStorage.getItem('nnpc_members')) || DEFAULT_MEMBERS;
+    let bookings = JSON.parse(localStorage.getItem('nnpc_bookings')) || DEFAULT_BOOKINGS;
+    let receipts = JSON.parse(localStorage.getItem('nnpc_receipts')) || DEFAULT_RECEIPTS;
+    let mediaItems = JSON.parse(localStorage.getItem('nnpc_media')) || DEFAULT_MEDIA;
+    let currentCardTheme = 'obsidian';
+    let bookingPlayerType = 'member';
+    let currentHeroSlide = 0;
+    let heroTimer = null;
+
+    // --- INITIALIZATION ON LOAD ---
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set default booking date to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const dateInput = document.getElementById('bookDate');
+      if (dateInput) dateInput.value = tomorrow.toISOString().split('T')[0];
+
+      // Render all sections
+      renderBookings();
+      renderRoster();
+      renderMedia();
+      renderReceipts();
+      renderAdminTable();
+      updatePassportLive();
+
+      // Start Hero 60s Carousel
+      startHeroRotation();
+    });
+
+    // --- TAB SWITCHING LOGIC ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      const activePane = document.getElementById('tab-' + tabId);
+      if (activePane) activePane.classList.remove('hidden');
+
+      // Update Nav buttons styling
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-brand-gold', 'bg-brand-emerald/70', 'border', 'border-brand-gold/30');
+        btn.classList.add('text-gray-300');
+      });
+      const activeNav = document.getElementById('nav-' + tabId);
+      if (activeNav) {
+        activeNav.classList.add('text-brand-gold', 'bg-brand-emerald/70', 'border', 'border-brand-gold/30');
+        activeNav.classList.remove('text-gray-300');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // --- ROTATING 60-SECOND HERO CAROUSEL ---
+    function startHeroRotation() {
+      if (heroTimer) clearInterval(heroTimer);
+      heroTimer = setInterval(() => {
+        setHeroSlide((currentHeroSlide + 1) % 4);
+      }, 60000); // 60 seconds cycle as briefed
+    }
+
+    function setHeroSlide(index) {
+      currentHeroSlide = index;
+      const slides = document.querySelectorAll('.hero-slide');
+      slides.forEach((slide, i) => {
+        if (i === index) {
+          slide.classList.remove('opacity-0');
+          slide.classList.add('opacity-100');
+        } else {
+          slide.classList.remove('opacity-100');
+          slide.classList.add('opacity-0');
+        }
+      });
+
+      // Update indicators
+      const indicators = document.querySelectorAll('.slide-indicator');
+      indicators.forEach((ind, i) => {
+        if (i === index) {
+          ind.classList.remove('w-3', 'bg-gray-600');
+          ind.classList.add('w-8', 'bg-brand-gold');
+        } else {
+          ind.classList.remove('w-8', 'bg-brand-gold');
+          ind.classList.add('w-3', 'bg-gray-600');
+        }
+      });
+    }
+
+    // --- BOOKING SYSTEM LOGIC ---
+    function setBookingPlayerType(type) {
+      bookingPlayerType = type;
+      const btnMember = document.getElementById('btnTypeMember');
+      const btnGuest = document.getElementById('btnTypeGuest');
+      const guestNotice = document.getElementById('guestFeeNotice');
+      const memberIdField = document.getElementById('memberIdField');
+
+      if (type === 'member') {
+        btnMember.className = "py-2.5 text-xs font-mono font-semibold rounded-lg bg-brand-emerald text-brand-gold border border-brand-gold/40 transition";
+        btnGuest.className = "py-2.5 text-xs font-mono font-semibold rounded-lg text-gray-400 hover:text-white transition";
+        guestNotice.classList.add('hidden');
+        memberIdField.querySelector('label').innerText = "Member ID / Phone *";
+        document.getElementById('bookMemberId').placeholder = "NNPC-KD-2026-084";
+      } else {
+        btnGuest.className = "py-2.5 text-xs font-mono font-semibold rounded-lg bg-brand-emerald text-brand-gold border border-brand-gold/40 transition";
+        btnMember.className = "py-2.5 text-xs font-mono font-semibold rounded-lg text-gray-400 hover:text-white transition";
+        guestNotice.classList.remove('hidden');
+        memberIdField.querySelector('label').innerText = "Guest Contact Mobile *";
+        document.getElementById('bookMemberId').placeholder = "+234 800 000 0000";
+      }
+    }
+
+    function openBookingPrefill(courtNumber) {
+      switchTab('booking');
+      const select = document.getElementById('bookCourtSelect');
+      if (select) {
+        select.selectedIndex = courtNumber - 1;
+      }
+    }
+
+    function handleCourtBooking(e) {
+      e.preventDefault();
+      const playerName = document.getElementById('bookPlayerName').value.trim();
+      const memberId = document.getElementById('bookMemberId').value.trim();
+      const court = document.getElementById('bookCourtSelect').value;
+      const format = document.getElementById('bookFormat').value;
+      const date = document.getElementById('bookDate').value;
+      const time = document.getElementById('bookTime').value;
+
+      // Check conflict on same court, date and time
+      const conflict = bookings.find(b => b.court === court && b.date === date && b.time === time);
+      if (conflict) {
+        showToast(`Court conflict! ${court} is already reserved for that slot.`, "error");
+        return;
+      }
+
+      const newBooking = {
+        id: "BK-" + Math.floor(1000 + Math.random() * 9000),
+        playerName,
+        memberId: memberId || (bookingPlayerType === 'guest' ? 'GUEST-PASS' : 'NNPC-MEMBER'),
+        court,
+        format,
+        date,
+        time,
+        type: bookingPlayerType
+      };
+
+      bookings.unshift(newBooking);
+      localStorage.setItem('nnpc_bookings', JSON.stringify(bookings));
+
+      renderBookings();
+      showToast("Court reservation confirmed!", "success");
+
+      // Show confirmation modal
+      const modalDetails = document.getElementById('bookingSuccessDetails');
+      modalDetails.innerHTML = `
+        <div class="flex justify-between"><span class="text-gray-400">Booking Reference:</span> <b class="text-brand-gold">${newBooking.id}</b></div>
+        <div class="flex justify-between"><span class="text-gray-400">Player:</span> <b class="text-white">${newBooking.playerName}</b></div>
+        <div class="flex justify-between"><span class="text-gray-400">Court:</span> <b class="text-white">${newBooking.court}</b></div>
+        <div class="flex justify-between"><span class="text-gray-400">Date & Slot:</span> <b class="text-amber-300">${newBooking.date} • ${newBooking.time}</b></div>
+        <div class="flex justify-between"><span class="text-gray-400">Format:</span> <b class="text-emerald-400">${newBooking.format}</b></div>
+      `;
+      document.getElementById('modalBookingSuccess').classList.remove('hidden');
+    }
+
+    function renderBookings() {
+      const container = document.getElementById('bookingsList');
+      const badge = document.getElementById('bookingCountBadge');
+      badge.innerText = `${bookings.length} Bookings`;
+
+      if (bookings.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-gray-500 font-mono text-xs">No active reservations recorded. Reserve a court above.</div>`;
+        return;
+      }
+
+      container.innerHTML = bookings.map(b => `
+        <div class="bg-brand-deep/80 border border-brand-gold/20 p-3.5 rounded-xl flex items-center justify-between text-xs font-mono">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-white text-sm">${b.playerName}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] ${b.type === 'guest' ? 'bg-amber-950 text-amber-300 border border-amber-600/40' : 'bg-emerald-950 text-emerald-300 border border-emerald-600/40'}">
+                ${b.type === 'guest' ? 'Guest Pass' : 'Club Member'}
+              </span>
+            </div>
+            <div class="text-brand-gold mt-1">${b.court} &bull; <span class="text-gray-300">${b.format}</span></div>
+            <div class="text-[11px] text-gray-400 mt-0.5">${b.date} &bull; ${b.time}</div>
+          </div>
+          <button onclick="cancelBooking('${b.id}')" class="text-red-400 hover:text-red-300 p-2 rounded hover:bg-brand-forest transition" title="Cancel Reservation">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function cancelBooking(id) {
+      bookings = bookings.filter(b => b.id !== id);
+      localStorage.setItem('nnpc_bookings', JSON.stringify(bookings));
+      renderBookings();
+      showToast("Booking cancelled.", "info");
+    }
+
+    function clearPastBookings() {
+      if (confirm("Reset bookings to Kaduna facility demo defaults?")) {
+        bookings = [...DEFAULT_BOOKINGS];
+        localStorage.setItem('nnpc_bookings', JSON.stringify(bookings));
+        renderBookings();
+        showToast("Demo bookings restored.", "success");
+      }
+    }
+
+    function closeBookingSuccessModal() {
+      document.getElementById('modalBookingSuccess').classList.add('hidden');
+    }
+
+    // --- CR80 ID & PASSPORT LOGIC ---
+    function showCardFace(face) {
+      const container = document.getElementById('cr80Container');
+      const btnFront = document.getElementById('btnShowFront');
+      const btnBack = document.getElementById('btnShowBack');
+      if (face === 'back') {
+        container.classList.add('card-flipped');
+        if (btnBack) btnBack.className = "px-4 py-1.5 rounded-lg font-bold bg-brand-emerald text-brand-gold border border-brand-gold/40 transition flex items-center gap-1.5";
+        if (btnFront) btnFront.className = "px-4 py-1.5 rounded-lg font-bold text-gray-300 hover:text-white transition";
+      } else {
+        container.classList.remove('card-flipped');
+        if (btnFront) btnFront.className = "px-4 py-1.5 rounded-lg font-bold bg-brand-emerald text-brand-gold border border-brand-gold/40 transition";
+        if (btnBack) btnBack.className = "px-4 py-1.5 rounded-lg font-bold text-gray-300 hover:text-white transition flex items-center gap-1.5";
+      }
+    }
+
+    function toggleCardFlip() {
+      const container = document.getElementById('cr80Container');
+      const isFlipped = container.classList.toggle('card-flipped');
+      const btnFront = document.getElementById('btnShowFront');
+      const btnBack = document.getElementById('btnShowBack');
+      if (isFlipped) {
+        if (btnBack) btnBack.className = "px-4 py-1.5 rounded-lg font-bold bg-brand-emerald text-brand-gold border border-brand-gold/40 transition flex items-center gap-1.5";
+        if (btnFront) btnFront.className = "px-4 py-1.5 rounded-lg font-bold text-gray-300 hover:text-white transition";
+      } else {
+        if (btnFront) btnFront.className = "px-4 py-1.5 rounded-lg font-bold bg-brand-emerald text-brand-gold border border-brand-gold/40 transition";
+        if (btnBack) btnBack.className = "px-4 py-1.5 rounded-lg font-bold text-gray-300 hover:text-white transition flex items-center gap-1.5";
+      }
+    }
+
+    function setCardTheme(theme) {
+      currentCardTheme = theme;
+      const front = document.getElementById('cardFront');
+      const back = document.getElementById('cardBack');
+      const btnObsidian = document.getElementById('btnThemeObsidian');
+      const btnWhite = document.getElementById('btnThemeWhite');
+
+      if (theme === 'white') {
+        btnWhite.className = "px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-brand-emerald text-brand-gold border border-brand-gold/40";
+        btnObsidian.className = "px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-gray-400 hover:text-white";
+        front.className = "absolute inset-0 backface-hidden p-4 sm:p-5 flex flex-col justify-between bg-gradient-to-br from-[#FAF8F5] via-[#F4EFE6] to-[#E9E2D5] text-[#0F1E17] border-2 border-brand-gold";
+        back.className = "absolute inset-0 backface-hidden rotate-y-180 p-3.5 sm:p-4 flex flex-col justify-between bg-gradient-to-br from-[#FAF8F5] via-[#F4EFE6] to-[#E9E2D5] text-[#0F1E17] border-2 border-brand-gold";
+        document.getElementById('cardDisplayName').className = "font-serif text-lg sm:text-2xl font-bold truncate text-[#0F1E17] leading-tight";
+      } else {
+        btnObsidian.className = "px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-brand-emerald text-brand-gold border border-brand-gold/40";
+        btnWhite.className = "px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-gray-400 hover:text-white";
+        front.className = "absolute inset-0 backface-hidden p-4 sm:p-5 flex flex-col justify-between bg-gradient-to-br from-brand-forest via-brand-emerald to-brand-deep text-brand-parchment border border-brand-gold/40";
+        back.className = "absolute inset-0 backface-hidden rotate-y-180 p-3.5 sm:p-4 flex flex-col justify-between bg-gradient-to-br from-brand-deep via-brand-forest to-brand-emerald text-brand-parchment border border-brand-gold/40";
+        document.getElementById('cardDisplayName').className = "font-serif text-lg sm:text-2xl font-bold truncate text-white leading-tight";
+      }
+    }
+
+    // --- DYNAMIC BARCODE GENERATOR FOR ID CARD BACK ---
+    function generateBarcodeSvg(dataText) {
+      let bars = [];
+      let x = 6;
+      // Leading quiet zone & start guard
+      bars.push('<rect x="' + x + '" y="0" width="2" height="34" fill="#000"/>'); x += 3;
+      bars.push('<rect x="' + x + '" y="0" width="1" height="34" fill="#000"/>'); x += 2;
+      bars.push('<rect x="' + x + '" y="0" width="3" height="34" fill="#000"/>'); x += 4;
+      
+      for (let i = 0; i < dataText.length; i++) {
+        const code = dataText.charCodeAt(i);
+        const w1 = ((code % 3) + 1);
+        const s1 = (((code >> 1) % 2) + 1);
+        const w2 = (((code >> 2) % 3) + 1);
+        const s2 = (((code >> 3) % 2) + 1);
+        
+        bars.push('<rect x="' + x + '" y="0" width="' + w1 + '" height="32" fill="#000"/>');
+        x += w1 + s1;
+        bars.push('<rect x="' + x + '" y="0" width="' + w2 + '" height="32" fill="#000"/>');
+        x += w2 + s2;
+        if (x > 260) break;
+      }
+      // Stop guard pattern
+      bars.push('<rect x="' + x + '" y="0" width="3" height="34" fill="#000"/>'); x += 4;
+      bars.push('<rect x="' + x + '" y="0" width="1" height="34" fill="#000"/>'); x += 2;
+      bars.push('<rect x="' + x + '" y="0" width="2" height="34" fill="#000"/>'); x += 6;
+      
+      return '<svg viewBox="0 0 ' + Math.max(x, 260) + ' 35" class="w-full h-full" preserveAspectRatio="none">' + bars.join('') + '</svg>';
+    }
+
+    // --- PLAYER PROFILE MODAL VIA CARD BACK LINK ---
+    function openPlayerProfileModal() {
+      const name = document.getElementById('inputPlayerName') ? document.getElementById('inputPlayerName').value.trim() : "Victor Benedict";
+      const emergency = document.getElementById('inputEmergency') ? document.getElementById('inputEmergency').value.trim() : "+234 (0) 803 555 0192";
+      const address = document.getElementById('inputAddress') ? document.getElementById('inputAddress').value.trim() : "NNPC Quarters, Sabo, Kaduna";
+      const tier = document.getElementById('selectTier') ? document.getElementById('selectTier').value : "HERITAGE PATRON";
+      const memberId = document.getElementById('cardDisplayId') ? document.getElementById('cardDisplayId').innerText : "NNPC-KD-2026-084";
+      const expiry = document.getElementById('cardDisplayExpiry') ? document.getElementById('cardDisplayExpiry').innerText : "12 / 2027";
+      const ntrp = document.getElementById('cardDisplayNTRP') ? document.getElementById('cardDisplayNTRP').innerText : "4.5 Verified";
+      const utr = document.getElementById('cardDisplayUTR') ? document.getElementById('cardDisplayUTR').innerText : "8.42";
+      const photoSrc = document.getElementById('cardDisplayPhoto') ? document.getElementById('cardDisplayPhoto').src : "";
+
+      const forehand = document.getElementById('sliderForehand') ? document.getElementById('sliderForehand').value : 88;
+      const backhand = document.getElementById('sliderBackhand') ? document.getElementById('sliderBackhand').value : 82;
+      const serve = document.getElementById('sliderServe') ? document.getElementById('sliderServe').value : 114;
+      const volley = document.getElementById('sliderVolley') ? document.getElementById('sliderVolley').value : 80;
+
+      // Populate Modal Fields
+      if (document.getElementById('modalProfilePhoto')) document.getElementById('modalProfilePhoto').src = photoSrc;
+      if (document.getElementById('modalProfileName')) document.getElementById('modalProfileName').innerText = name;
+      if (document.getElementById('modalProfileTier')) document.getElementById('modalProfileTier').innerText = tier;
+      if (document.getElementById('modalProfileId')) document.getElementById('modalProfileId').innerText = "MEMBER ID: " + memberId;
+      if (document.getElementById('modalProfileNtrp')) document.getElementById('modalProfileNtrp').innerText = "NTRP: " + ntrp;
+      if (document.getElementById('modalProfileUtr')) document.getElementById('modalProfileUtr').innerText = "UTR: " + utr;
+      if (document.getElementById('modalProfilePhone')) document.getElementById('modalProfilePhone').innerText = emergency;
+      if (document.getElementById('modalProfileAddress')) document.getElementById('modalProfileAddress').innerText = address;
+      if (document.getElementById('modalProfileExpiry')) document.getElementById('modalProfileExpiry').innerText = "Valid Through " + expiry;
+
+      if (document.getElementById('modalProfileForehand')) document.getElementById('modalProfileForehand').innerText = forehand + " / 100";
+      if (document.getElementById('modalBarForehand')) document.getElementById('modalBarForehand').style.width = forehand + "%";
+      if (document.getElementById('modalProfileBackhand')) document.getElementById('modalProfileBackhand').innerText = backhand + " / 100";
+      if (document.getElementById('modalBarBackhand')) document.getElementById('modalBarBackhand').style.width = backhand + "%";
+      if (document.getElementById('modalProfileServe')) document.getElementById('modalProfileServe').innerText = serve + " MPH";
+      if (document.getElementById('modalBarServe')) document.getElementById('modalBarServe').style.width = Math.min(100, Math.round((serve / 130) * 100)) + "%";
+      if (document.getElementById('modalProfileVolley')) document.getElementById('modalProfileVolley').innerText = volley + " / 100";
+      if (document.getElementById('modalBarVolley')) document.getElementById('modalBarVolley').style.width = volley + "%";
+
+      const fullPayload = `${memberId}|NAME:${name}|TEL:${emergency}|LOC:${address}|TIER:${tier}|NTRP:${ntrp}|UTR:${utr}|EXP:${expiry}|STATUS:CLEARED|URL:https://nnpc-kaduna.club/player/${memberId}`;
+      if (document.getElementById('modalBarcodePayload')) document.getElementById('modalBarcodePayload').innerText = fullPayload;
+
+      document.getElementById('modalPlayerProfile').classList.remove('hidden');
+    }
+
+    function closePlayerProfileModal() {
+      document.getElementById('modalPlayerProfile').classList.add('hidden');
+    }
+
+    function updatePassportLive() {
+      const name = document.getElementById('inputPlayerName').value.trim() || "Victor Benedict";
+      const emergency = document.getElementById('inputEmergency').value.trim() || "+234 (0) 803 555 0192";
+      const tier = document.getElementById('selectTier').value;
+
+      const forehand = parseInt(document.getElementById('sliderForehand').value);
+      const backhand = parseInt(document.getElementById('sliderBackhand').value);
+      const serve = parseInt(document.getElementById('sliderServe').value);
+      const volley = parseInt(document.getElementById('sliderVolley').value);
+
+      document.getElementById('labelForehand').innerText = `${forehand} / 100`;
+      document.getElementById('labelBackhand').innerText = `${backhand} / 100`;
+      document.getElementById('labelServe').innerText = `${serve} MPH`;
+      document.getElementById('labelVolley').innerText = `${volley} / 100`;
+
+      // Calculate calibrated NTRP & UTR
+      const telemetryAvg = (forehand + backhand + (serve * 0.77) + volley) / 4;
+      let calculatedNtrp = "3.5";
+      let calculatedUtr = "6.50";
+
+      if (telemetryAvg >= 88) {
+        calculatedNtrp = "5.0 Pro";
+        calculatedUtr = "10.25";
+      } else if (telemetryAvg >= 80) {
+        calculatedNtrp = "4.5 Verified";
+        calculatedUtr = "8.42";
+      } else if (telemetryAvg >= 72) {
+        calculatedNtrp = "4.0 Intermediate";
+        calculatedUtr = "7.30";
+      }
+
+      // Update Card Preview
+      document.getElementById('cardDisplayName').innerText = name;
+      document.getElementById('cardDisplayTier').innerText = tier;
+      document.getElementById('cardDisplayEmergency').innerText = emergency;
+      document.getElementById('cardDisplayNTRP').innerText = calculatedNtrp;
+      document.getElementById('cardDisplayUTR').innerText = calculatedUtr;
+
+      const address = document.getElementById('inputAddress') ? document.getElementById('inputAddress').value.trim() : "NNPC Quarters, Sabo, Kaduna";
+      const memberId = document.getElementById('cardDisplayId') ? document.getElementById('cardDisplayId').innerText : "NNPC-KD-2026-084";
+
+      // Update Card Back Owner & Contact Details
+      if (document.getElementById('cardBackOwnerName')) document.getElementById('cardBackOwnerName').innerText = name;
+      if (document.getElementById('cardBackMemberId')) document.getElementById('cardBackMemberId').innerText = memberId;
+      if (document.getElementById('cardBackPhone')) document.getElementById('cardBackPhone').innerText = emergency;
+      if (document.getElementById('cardBackAddress')) document.getElementById('cardBackAddress').innerText = address;
+      if (document.getElementById('cardBackSignature')) document.getElementById('cardBackSignature').innerText = name;
+      if (document.getElementById('barcodeEncodedString')) document.getElementById('barcodeEncodedString').innerText = memberId;
+      if (document.getElementById('barcodeOwnerPhoneDisplay')) document.getElementById('barcodeOwnerPhoneDisplay').innerText = emergency;
+
+      // Encode EVERY piece of information at the back into the Barcode
+      const profileUrl = "https://nnpc-kaduna.club/player/" + memberId;
+      const barcodePayload = `${memberId}|NAME:${name}|TEL:${emergency}|LOC:${address}|TIER:${tier}|NTRP:${calculatedNtrp}|UTR:${calculatedUtr}|EXP:${document.getElementById('cardDisplayExpiry').innerText}|STATUS:CLEARED|URL:${profileUrl}`;
+      const barcodeSvg = generateBarcodeSvg(barcodePayload);
+      
+      const barcodeContainer = document.getElementById('cardBarcodeSvgContainer');
+      if (barcodeContainer) barcodeContainer.innerHTML = barcodeSvg;
+
+      // Update Card Back Profile Link
+      if (document.getElementById('cardBackProfileLink')) {
+        document.getElementById('cardBackProfileLink').innerText = "nnpc-kaduna.club/player/" + memberId;
+      }
+      if (document.getElementById('cardBackSignature')) {
+        document.getElementById('cardBackSignature').innerText = name;
+      }
+      if (document.getElementById('barcodeEncodedString')) {
+        document.getElementById('barcodeEncodedString').innerText = `${memberId} • ${name}`;
+      }
+      if (document.getElementById('barcodeOwnerPhoneDisplay')) {
+        document.getElementById('barcodeOwnerPhoneDisplay').innerText = emergency;
+      }
+
+      // Update Permanent Telemetry Barcode Panel
+      const telemetrySvgContainer = document.getElementById('telemetryBarcodeSvg');
+      if (telemetrySvgContainer) telemetrySvgContainer.innerHTML = barcodeSvg;
+      if (document.getElementById('telemetryBarcodeCode')) document.getElementById('telemetryBarcodeCode').innerText = memberId;
+      if (document.getElementById('telemetryBarcodePhone')) document.getElementById('telemetryBarcodePhone').innerText = emergency;
+      if (document.getElementById('telemetryName')) document.getElementById('telemetryName').innerText = name;
+      if (document.getElementById('telemetryPhone')) document.getElementById('telemetryPhone').innerText = emergency;
+      if (document.getElementById('telemetryAddress')) document.getElementById('telemetryAddress').innerText = address;
+
+      // Update Printable Back Sheet
+      const printBarcodeSvg = document.getElementById('printBarcodeSvg');
+      if (printBarcodeSvg) printBarcodeSvg.innerHTML = barcodeSvg;
+      if (document.getElementById('printBarcodeText')) {
+        document.getElementById('printBarcodeText').innerText = memberId + ' • ' + name + ' • ' + emergency;
+      }
+      if (document.getElementById('printBackName')) document.getElementById('printBackName').innerText = name;
+      if (document.getElementById('printBackId')) document.getElementById('printBackId').innerText = memberId;
+      if (document.getElementById('printBackPhone')) document.getElementById('printBackPhone').innerText = emergency;
+      if (document.getElementById('printBackAddress')) document.getElementById('printBackAddress').innerText = address;
+
+      // Update printable front backing state
+      document.getElementById('printName').innerText = name;
+      document.getElementById('printTier').innerText = tier;
+      document.getElementById('printNtrp').innerText = `NTRP ${calculatedNtrp} • UTR ${calculatedUtr}`;
+      document.getElementById('printId').innerText = memberId;
+      document.getElementById('printExpiry').innerText = "EXP: " + document.getElementById('cardDisplayExpiry').innerText;
+      document.getElementById('printPhoto').src = document.getElementById('cardDisplayPhoto').src;
+    }
+
+    function handlePortraitUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const dataUrl = evt.target.result;
+          document.getElementById('cardDisplayPhoto').src = dataUrl;
+          document.getElementById('printPhoto').src = dataUrl;
+          showToast("CR80 portrait updated.", "success");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    const AVATARS = [
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80"
+    ];
+    let avatarIndex = 0;
+    function cycleSampleAvatar() {
+      avatarIndex = (avatarIndex + 1) % AVATARS.length;
+      document.getElementById('cardDisplayPhoto').src = AVATARS[avatarIndex];
+      document.getElementById('printPhoto').src = AVATARS[avatarIndex];
+      showToast("Avatar cycled.", "info");
+    }
+
+    function triggerPrintCR80() {
+      document.getElementById('printTimestamp').innerText = new Date().toLocaleString();
+      window.print();
+    }
+
+    function downloadCardJSON() {
+      const cardData = {
+        organization: "NNPC Tennis Club Kaduna",
+        memberId: document.getElementById('cardDisplayId').innerText,
+        name: document.getElementById('cardDisplayName').innerText,
+        tier: document.getElementById('cardDisplayTier').innerText,
+        ntrp: document.getElementById('cardDisplayNTRP').innerText,
+        utr: document.getElementById('cardDisplayUTR').innerText,
+        expiry: document.getElementById('cardDisplayExpiry').innerText,
+        status: "CLEARED"
+      };
+      const blob = new Blob([JSON.stringify(cardData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nnpc_card_${cardData.memberId}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Digital credential exported.", "success");
+    }
+
+    // --- MEMBER ROSTER & LADDER ---
+    function renderRoster() {
+      const grid = document.getElementById('rosterGrid');
+      grid.innerHTML = members.map(m => `
+        <div class="bg-brand-card border border-brand-gold/30 rounded-2xl p-5 hover:border-brand-gold transition shadow-lg flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div class="flex items-center gap-3">
+                <img src="${m.photo}" class="w-12 h-12 rounded-xl object-cover border border-brand-gold/40">
+                <div>
+                  <h4 class="font-serif text-lg font-bold text-white">${m.name}</h4>
+                  <span class="text-[10px] font-mono text-brand-gold-light">${m.id}</span>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${m.duesCleared ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-red-950 text-red-400 border border-red-500/30'}">
+                ${m.duesCleared ? 'Active' : 'Dues Due'}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-brand-deep/60 p-3 rounded-lg border border-brand-gold/15 mb-4">
+              <div>
+                <span class="text-gray-400 block text-[10px]">NTRP RATING</span>
+                <span class="text-white font-bold">${m.ntrp}</span>
+              </div>
+              <div>
+                <span class="text-gray-400 block text-[10px]">MATCH RECORD</span>
+                <span class="text-brand-gold font-bold">${m.wins}W - ${m.losses}L</span>
+              </div>
+            </div>
+
+            <div class="text-[11px] font-mono text-gray-400">
+              <span>Play Style: ${m.hand}</span> &bull; <span>Tier: ${m.tier}</span>
+            </div>
+          </div>
+
+          <button onclick="challengeMember('${m.name}')" class="mt-4 w-full py-2 rounded-lg bg-brand-forest border border-brand-gold/30 text-brand-gold hover:bg-brand-emerald text-xs font-mono uppercase tracking-wider transition">
+            Challenge to Match
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function filterRoster() {
+      const search = document.getElementById('rosterSearch').value.toLowerCase();
+      const ntrpFilter = document.getElementById('rosterNtrpFilter').value;
+
+      const filtered = members.filter(m => {
+        const matchesSearch = m.name.toLowerCase().includes(search) || m.id.toLowerCase().includes(search);
+        const matchesNtrp = (ntrpFilter === 'ALL') || (parseFloat(m.ntrp) >= parseFloat(ntrpFilter));
+        return matchesSearch && matchesNtrp;
+      });
+
+      const grid = document.getElementById('rosterGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-3 text-center py-10 font-mono text-xs text-gray-400">No matching Kaduna players found.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(m => `
+        <div class="bg-brand-card border border-brand-gold/30 rounded-2xl p-5 hover:border-brand-gold transition shadow-lg flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div class="flex items-center gap-3">
+                <img src="${m.photo}" class="w-12 h-12 rounded-xl object-cover border border-brand-gold/40">
+                <div>
+                  <h4 class="font-serif text-lg font-bold text-white">${m.name}</h4>
+                  <span class="text-[10px] font-mono text-brand-gold-light">${m.id}</span>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${m.duesCleared ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-red-950 text-red-400 border border-red-500/30'}">
+                ${m.duesCleared ? 'Active' : 'Dues Due'}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-brand-deep/60 p-3 rounded-lg border border-brand-gold/15 mb-4">
+              <div>
+                <span class="text-gray-400 block text-[10px]">NTRP RATING</span>
+                <span class="text-white font-bold">${m.ntrp}</span>
+              </div>
+              <div>
+                <span class="text-gray-400 block text-[10px]">MATCH RECORD</span>
+                <span class="text-brand-gold font-bold">${m.wins}W - ${m.losses}L</span>
+              </div>
+            </div>
+
+            <div class="text-[11px] font-mono text-gray-400">
+              <span>Play Style: ${m.hand}</span> &bull; <span>Tier: ${m.tier}</span>
+            </div>
+          </div>
+
+          <button onclick="challengeMember('${m.name}')" class="mt-4 w-full py-2 rounded-lg bg-brand-forest border border-brand-gold/30 text-brand-gold hover:bg-brand-emerald text-xs font-mono uppercase tracking-wider transition">
+            Challenge to Match
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function challengeMember(opponentName) {
+      switchTab('booking');
+      document.getElementById('bookFormat').value = "Singles Match";
+      showToast(`Challenge mode: Selected match versus ${opponentName}`, "info");
+    }
+
+    // --- MEDIA STUDIO LOGIC ---
+    function renderMedia() {
+      const gallery = document.getElementById('mediaGallery');
+      gallery.innerHTML = mediaItems.map(item => `
+        <div class="bg-brand-card border border-brand-gold/20 rounded-2xl overflow-hidden shadow-lg group">
+          <div class="h-52 overflow-hidden relative bg-brand-deep">
+            ${item.type === 'video' ? `
+              <video src="${item.url}" controls class="w-full h-full object-cover"></video>
+            ` : `
+              <img src="${item.url}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            `}
+          </div>
+          <div class="p-4 flex items-center justify-between">
+            <div>
+              <h4 class="font-serif text-base font-bold text-white line-clamp-1">${item.title}</h4>
+              <p class="text-[10px] font-mono text-gray-400">Uploaded by ${item.author}</p>
+            </div>
+            <button onclick="likeMedia('${item.id}')" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-deep border border-brand-gold/20 text-xs font-mono text-brand-gold hover:bg-brand-forest transition">
+              <svg class="w-3.5 h-3.5 text-amber-400 fill-amber-400" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"></path></svg>
+              <span>${item.likes}</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function likeMedia(id) {
+      const item = mediaItems.find(m => m.id === id);
+      if (item) {
+        item.likes += 1;
+        localStorage.setItem('nnpc_media', JSON.stringify(mediaItems));
+        renderMedia();
+      }
+    }
+
+    function handleMediaUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const isVideo = file.type.startsWith('video');
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const newItem = {
+            id: "m-" + Date.now(),
+            title: file.name.replace(/\.[^/.]+$/, ""),
+            url: evt.target.result,
+            type: isVideo ? 'video' : 'image',
+            author: "Member Upload",
+            likes: 1
+          };
+          mediaItems.unshift(newItem);
+          localStorage.setItem('nnpc_media', JSON.stringify(mediaItems));
+          renderMedia();
+          showToast("Match media uploaded to Clubhouse Gallery!", "success");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // --- DUES PAYMENT SIMULATOR LOGIC ---
+    let pendingDuesPlan = null;
+    let pendingDuesAmount = 0;
+    let pendingDuesDays = 0;
+
+    function openPaymentModal(plan, amount, days) {
+      pendingDuesPlan = plan;
+      pendingDuesAmount = amount;
+      pendingDuesDays = days;
+
+      document.getElementById('payModalSubtitle').innerText = `${plan} Dues Renewal`;
+      document.getElementById('payModalDays').innerText = `+${days} Days Clearance Extension`;
+      document.getElementById('payModalAmount').innerText = `₦${amount.toLocaleString()}`;
+      document.getElementById('modalPayment').classList.remove('hidden');
+    }
+
+    function closePaymentModal() {
+      document.getElementById('modalPayment').classList.add('hidden');
+    }
+
+    function processPaymentSimulation(e) {
+      e.preventDefault();
+      const channel = document.getElementById('payChannel').value;
+
+      // Update current user expiry date
+      const currentExpiry = new Date();
+      currentExpiry.setDate(currentExpiry.getDate() + pendingDuesDays);
+      const newExpiryStr = currentExpiry.toISOString().split('T')[0];
+      
+      // Update first member
+      members[0].expiry = newExpiryStr;
+      members[0].duesCleared = true;
+      localStorage.setItem('nnpc_members', JSON.stringify(members));
+
+      // Update UI displays
+      document.getElementById('cardDisplayExpiry').innerText = newExpiryStr.slice(5).replace('-', ' / ');
+
+      // Add to receipts
+      const newReceipt = {
+        id: "TXN-NNPC-KD-" + Math.floor(10000 + Math.random() * 90000),
+        date: new Date().toISOString().replace('T', ' ').slice(0, 16),
+        plan: pendingDuesPlan,
+        amount: `₦${pendingDuesAmount.toLocaleString()}`,
+        member: members[0].name,
+        channel: channel
+      };
+      receipts.unshift(newReceipt);
+      localStorage.setItem('nnpc_receipts', JSON.stringify(receipts));
+
+      renderReceipts();
+      renderAdminTable();
+      closePaymentModal();
+      showToast("Payment cleared! Member ID validity extended.", "success");
+    }
+
+    function renderReceipts() {
+      const container = document.getElementById('receiptsLedger');
+      container.innerHTML = receipts.map(r => `
+        <div class="bg-brand-deep/80 border border-brand-gold/20 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-brand-gold font-bold">${r.id}</span>
+              <span class="text-white font-semibold">&bull; ${r.plan}</span>
+            </div>
+            <p class="text-gray-400 text-[11px] mt-0.5">${r.date} &bull; ${r.channel} &bull; Beneficiary: ${r.member}</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-emerald-400 font-bold text-sm">${r.amount}</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600/30 text-[10px]">CLEARED</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // --- ADMIN GOVERNANCE CONSOLE LOGIC ---
+    function openAdminModal() {
+      document.getElementById('modalAdminAuth').classList.remove('hidden');
+    }
+
+    function closeAdminModal() {
+      document.getElementById('modalAdminAuth').classList.add('hidden');
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const code = document.getElementById('adminPasscodeInput').value.trim();
+      if (code === 'nnpc2026' || code === 'admin') {
+        closeAdminModal();
+        switchTab('admin');
+        showToast("Authenticated as Kaduna Club Administrator.", "success");
+      } else {
+        showToast("Incorrect admin passcode. Try 'nnpc2026'", "error");
+      }
+    }
+
+    function renderAdminTable() {
+      const tbody = document.getElementById('adminMemberTable');
+      tbody.innerHTML = members.map((m, idx) => `
+        <tr class="hover:bg-brand-forest/40 transition">
+          <td class="py-3 px-4 font-bold text-brand-gold">${m.id}</td>
+          <td class="py-3 px-4 text-white">${m.name}</td>
+          <td class="py-3 px-4">${m.ntrp} (${m.tier})</td>
+          <td class="py-3 px-4">
+            <button onclick="toggleDuesStatus(${idx})" class="px-2 py-1 rounded text-[10px] font-bold ${m.duesCleared ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/40' : 'bg-red-950 text-red-400 border border-red-500/40'}">
+              ${m.duesCleared ? 'CLEARED' : 'OVERDUE'}
+            </button>
+          </td>
+          <td class="py-3 px-4 text-gray-300">${m.expiry}</td>
+          <td class="py-3 px-4 text-right space-x-2">
+            <button onclick="extendMemberExpiry(${idx})" class="text-brand-gold hover:underline">Extend 1 Year</button>
+            <button onclick="deleteMember(${idx})" class="text-red-400 hover:underline">Remove</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function toggleDuesStatus(idx) {
+      members[idx].duesCleared = !members[idx].duesCleared;
+      localStorage.setItem('nnpc_members', JSON.stringify(members));
+      renderAdminTable();
+      renderRoster();
+      showToast(`Updated dues status for ${members[idx].name}`, "info");
+    }
+
+    function extendMemberExpiry(idx) {
+      const d = new Date(members[idx].expiry || new Date());
+      d.setFullYear(d.getFullYear() + 1);
+      members[idx].expiry = d.toISOString().split('T')[0];
+      members[idx].duesCleared = true;
+      localStorage.setItem('nnpc_members', JSON.stringify(members));
+      renderAdminTable();
+      renderRoster();
+      showToast(`Extended ${members[idx].name}'s ID validity by 1 Year`, "success");
+    }
+
+    function deleteMember(idx) {
+      if (confirm(`Remove ${members[idx].name} from Kaduna database?`)) {
+        members.splice(idx, 1);
+        localStorage.setItem('nnpc_members', JSON.stringify(members));
+        renderAdminTable();
+        renderRoster();
+        showToast("Member record removed.", "info");
+      }
+    }
+
+    function addNewMemberPrompt() {
+      const name = prompt("Enter Member Full Name:");
+      if (!name) return;
+      const ntrp = prompt("Enter NTRP Skill Rating (e.g. 4.0):", "4.0");
+      const newMember = {
+        id: "NNPC-KD-2026-" + Math.floor(100 + Math.random() * 900),
+        name: name,
+        ntrp: parseFloat(ntrp) || 4.0,
+        utr: (parseFloat(ntrp) * 1.8).toFixed(2),
+        tier: "CLUB MEMBER",
+        duesCleared: true,
+        expiry: "2027-12-31",
+        photo: AVATARS[Math.floor(Math.random() * AVATARS.length)],
+        emergency: "+234 800 000 0000",
+        forehand: 80,
+        backhand: 75,
+        serve: 105,
+        volley: 75,
+        hand: "Right-handed",
+        wins: 0,
+        losses: 0
+      };
+      members.push(newMember);
+      localStorage.setItem('nnpc_members', JSON.stringify(members));
+      renderAdminTable();
+      renderRoster();
+      showToast(`Registered ${name} to NNPC Tennis Club Kaduna.`, "success");
+    }
+
+    // --- TOAST ALERTS HELPER ---
+    function showToast(message, type = "info") {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      let borderCol = "border-brand-gold";
+      let bgCol = "bg-brand-card";
+      let icon = "✓";
+
+      if (type === "error") {
+        borderCol = "border-red-500";
+        icon = "✕";
+      }
+
+      toast.className = `p-3.5 rounded-xl border ${borderCol} ${bgCol} text-white shadow-2xl flex items-center gap-3 text-xs font-mono max-w-sm pointer-events-auto transform transition-all duration-300 translate-y-2 opacity-0`;
+      toast.innerHTML = `
+        <span class="font-bold text-brand-gold">${icon}</span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
