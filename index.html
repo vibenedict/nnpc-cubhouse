@@ -111,7 +111,38 @@
       }
     }
 
-    /* Print Styles for CR80 Card & Receipts */
+    #cardQrCode > svg, #gateQrCode > svg, #printQrCode > svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      shape-rendering: crispEdges;
+    }
+    #cardQrCode, #gateQrCode, #printQrCode {
+      aspect-ratio: 1;
+      background: white;
+      color: #000;
+      font-size: 10px;
+    }
+    #cardQrCode {
+      width: 88px;
+    }
+    #gateQrCode {
+      width: 128px;
+    }
+    #printQrCode {
+      width: 112px;
+    }
+    @media (min-width: 640px) {
+      #cardQrCode {
+        width: 112px;
+      }
+    }
+
+    #ballInventoryPrintReport {
+      display: none;
+    }
+
+    /* Print Styles for CR80 Card, Receipts & Inventory */
     @media print {
       body * {
         visibility: hidden !important;
@@ -132,6 +163,44 @@
       }
       .print-page-break {
         page-break-before: always;
+      }
+      body.print-ball-inventory {
+        background: white !important;
+      }
+      body.print-ball-inventory > :not(#ballInventoryPrintReport) {
+        display: none !important;
+      }
+      body.print-ball-inventory #ballInventoryPrintReport {
+        display: block;
+        color: black;
+        padding: 0.5cm;
+        font-size: 11pt;
+      }
+      body.print-ball-inventory #ballInventoryPrintReport,
+      body.print-ball-inventory #ballInventoryPrintReport * {
+        visibility: visible !important;
+      }
+      #ballInventoryPrintReport h1 {
+        font-size: 20pt;
+        font-weight: bold;
+      }
+      #ballInventoryPrintReport p {
+        margin: 0.3em 0;
+      }
+      #ballInventoryPrintReport table {
+        width: 100%;
+        margin-top: 1em;
+        border-collapse: collapse;
+      }
+      #ballInventoryPrintReport th,
+      #ballInventoryPrintReport td {
+        padding: 0.4em;
+        border-bottom: 1px solid #aaa;
+        text-align: left;
+        overflow-wrap: anywhere;
+      }
+      #ballInventoryPrintReport tr {
+        break-inside: avoid;
       }
     }
 
@@ -720,7 +789,7 @@
               🪪 View Front
             </button>
             <button type="button" onclick="showCardFace('back')" id="btnShowBack" class="px-4 py-1.5 rounded-lg font-bold text-gray-300 hover:text-white transition flex items-center gap-1.5">
-              <span>📊 View Back (Barcode & Details)</span>
+              <span>📊 View Back (QR Code & Details)</span>
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             </button>
             <button type="button" onclick="toggleCardFlip()" class="px-3 py-1.5 rounded-lg text-brand-gold hover:text-white transition" title="Flip Card">
@@ -815,21 +884,17 @@
                   <span class="text-[7px] sm:text-[8px] font-mono text-brand-gold uppercase tracking-widest">ISO 7810</span>
                 </div>
 
-                <!-- ALL MEMBER INFORMATION ENCODED INTO BARCODE -->
-                <div class="bg-white rounded-lg p-2 border-2 border-brand-gold shadow-md text-black flex-grow flex flex-col justify-between my-1">
-                  <div class="flex items-center justify-between text-[7px] sm:text-[8px] font-mono text-gray-700 font-bold uppercase mb-0.5 px-0.5">
-                    <span>SECURITY BARCODE • ENCODED MEMBER DATA</span>
-                    <span id="barcodeStatusTag" class="text-emerald-700 font-bold">● VERIFIED</span>
+                <div class="my-1 flex flex-grow flex-col justify-center gap-1.5 rounded-lg border border-brand-gold/50 bg-brand-deep px-3 py-2">
+                  <div class="flex items-center justify-between gap-2 text-[8px] font-bold uppercase tracking-wider text-brand-gold">
+                    <span>Member QR code</span>
+                    <span id="qrStatusTag" class="shrink-0 text-emerald-400">● VERIFIED</span>
                   </div>
-                  
-                  <!-- Full-Height Barcode Vector Container -->
-                  <div id="cardBarcodeSvgContainer" class="w-full h-14 sm:h-16 flex items-center justify-center overflow-hidden bg-white my-0.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 628 42" class="w-full h-full" preserveAspectRatio="none"><rect x="4" y="0" width="2" height="42" fill="#000000"/><rect x="6" y="0" width="2" height="42" fill="#000000"/><rect x="10" y="0" width="2" height="42" fill="#000000"/><rect x="16" y="0" width="2" height="42" fill="#000000"/><rect x="26" y="0" width="2" height="42" fill="#000000"/><rect x="30" y="0" width="2" height="42" fill="#000000"/><rect x="32" y="0" width="2" height="42" fill="#000000"/><rect x="38" y="0" width="2" height="42" fill="#000000"/><rect x="40" y="0" width="2" height="42" fill="#000000"/><rect x="42" y="0" width="2" height="42" fill="#000000"/><rect x="48" y="0" width="2" height="42" fill="#000000"/><rect x="54" y="0" width="2" height="42" fill="#000000"/><rect x="56" y="0" width="2" height="42" fill="#000000"/><rect x="60" y="0" width="2" height="42" fill="#000000"/><rect x="62" y="0" width="2" height="42" fill="#000000"/><rect x="64" y="0" width="2" height="42" fill="#000000"/><rect x="70" y="0" width="2" height="42" fill="#000000"/><rect x="72" y="0" width="2" height="42" fill="#000000"/><rect x="74" y="0" width="2" height="42" fill="#000000"/><rect x="80" y="0" width="2" height="42" fill="#000000"/><rect x="86" y="0" width="2" height="42" fill="#000000"/><rect x="88" y="0" width="2" height="42" fill="#000000"/><rect x="92" y="0" width="2" height="42" fill="#000000"/><rect x="98" y="0" width="2" height="42" fill="#000000"/><rect x="100" y="0" width="2" height="42" fill="#000000"/><rect x="102" y="0" width="2" height="42" fill="#000000"/><rect x="106" y="0" width="2" height="42" fill="#000000"/><rect x="108" y="0" width="2" height="42" fill="#000000"/><rect x="114" y="0" width="2" height="42" fill="#000000"/><rect x="116" y="0" width="2" height="42" fill="#000000"/><rect x="122" y="0" width="2" height="42" fill="#000000"/><rect x="126" y="0" width="2" height="42" fill="#000000"/><rect x="128" y="0" width="2" height="42" fill="#000000"/><rect x="130" y="0" width="2" height="42" fill="#000000"/><rect x="136" y="0" width="2" height="42" fill="#000000"/><rect x="138" y="0" width="2" height="42" fill="#000000"/><rect x="140" y="0" width="2" height="42" fill="#000000"/><rect x="146" y="0" width="2" height="42" fill="#000000"/><rect x="150" y="0" width="2" height="42" fill="#000000"/><rect x="152" y="0" width="2" height="42" fill="#000000"/><rect x="158" y="0" width="2" height="42" fill="#000000"/><rect x="160" y="0" width="2" height="42" fill="#000000"/><rect x="166" y="0" width="2" height="42" fill="#000000"/><rect x="168" y="0" width="2" height="42" fill="#000000"/><rect x="172" y="0" width="2" height="42" fill="#000000"/><rect x="180" y="0" width="2" height="42" fill="#000000"/><rect x="182" y="0" width="2" height="42" fill="#000000"/><rect x="186" y="0" width="2" height="42" fill="#000000"/><rect x="188" y="0" width="2" height="42" fill="#000000"/><rect x="194" y="0" width="2" height="42" fill="#000000"/><rect x="196" y="0" width="2" height="42" fill="#000000"/><rect x="202" y="0" width="2" height="42" fill="#000000"/><rect x="206" y="0" width="2" height="42" fill="#000000"/><rect x="208" y="0" width="2" height="42" fill="#000000"/><rect x="216" y="0" width="2" height="42" fill="#000000"/><rect x="218" y="0" width="2" height="42" fill="#000000"/><rect x="224" y="0" width="2" height="42" fill="#000000"/><rect x="232" y="0" width="2" height="42" fill="#000000"/><rect x="234" y="0" width="2" height="42" fill="#000000"/><rect x="238" y="0" width="2" height="42" fill="#000000"/><rect x="240" y="0" width="2" height="42" fill="#000000"/><rect x="246" y="0" width="2" height="42" fill="#000000"/><rect x="252" y="0" width="2" height="42" fill="#000000"/><rect x="254" y="0" width="2" height="42" fill="#000000"/><rect x="262" y="0" width="2" height="42" fill="#000000"/><rect x="264" y="0" width="2" height="42" fill="#000000"/><rect x="268" y="0" width="2" height="42" fill="#000000"/><rect x="272" y="0" width="2" height="42" fill="#000000"/><rect x="274" y="0" width="2" height="42" fill="#000000"/><rect x="276" y="0" width="2" height="42" fill="#000000"/><rect x="280" y="0" width="2" height="42" fill="#000000"/><rect x="282" y="0" width="2" height="42" fill="#000000"/><rect x="290" y="0" width="2" height="42" fill="#000000"/><rect x="298" y="0" width="2" height="42" fill="#000000"/><rect x="300" y="0" width="2" height="42" fill="#000000"/><rect x="304" y="0" width="2" height="42" fill="#000000"/><rect x="312" y="0" width="2" height="42" fill="#000000"/><rect x="314" y="0" width="2" height="42" fill="#000000"/><rect x="320" y="0" width="2" height="42" fill="#000000"/><rect x="322" y="0" width="2" height="42" fill="#000000"/><rect x="328" y="0" width="2" height="42" fill="#000000"/><rect x="334" y="0" width="2" height="42" fill="#000000"/><rect x="340" y="0" width="2" height="42" fill="#000000"/><rect x="348" y="0" width="2" height="42" fill="#000000"/><rect x="350" y="0" width="2" height="42" fill="#000000"/><rect x="356" y="0" width="2" height="42" fill="#000000"/><rect x="358" y="0" width="2" height="42" fill="#000000"/><rect x="362" y="0" width="2" height="42" fill="#000000"/><rect x="364" y="0" width="2" height="42" fill="#000000"/><rect x="370" y="0" width="2" height="42" fill="#000000"/><rect x="372" y="0" width="2" height="42" fill="#000000"/><rect x="378" y="0" width="2" height="42" fill="#000000"/><rect x="382" y="0" width="2" height="42" fill="#000000"/><rect x="384" y="0" width="2" height="42" fill="#000000"/><rect x="386" y="0" width="2" height="42" fill="#000000"/><rect x="392" y="0" width="2" height="42" fill="#000000"/><rect x="394" y="0" width="2" height="42" fill="#000000"/><rect x="400" y="0" width="2" height="42" fill="#000000"/><rect x="406" y="0" width="2" height="42" fill="#000000"/><rect x="410" y="0" width="2" height="42" fill="#000000"/><rect x="412" y="0" width="2" height="42" fill="#000000"/><rect x="422" y="0" width="2" height="42" fill="#000000"/><rect x="424" y="0" width="2" height="42" fill="#000000"/><rect x="428" y="0" width="2" height="42" fill="#000000"/><rect x="438" y="0" width="2" height="42" fill="#000000"/><rect x="444" y="0" width="2" height="42" fill="#000000"/><rect x="454" y="0" width="2" height="42" fill="#000000"/><rect x="458" y="0" width="2" height="42" fill="#000000"/><rect x="460" y="0" width="2" height="42" fill="#000000"/><rect x="466" y="0" width="2" height="42" fill="#000000"/><rect x="470" y="0" width="2" height="42" fill="#000000"/><rect x="480" y="0" width="2" height="42" fill="#000000"/><rect x="482" y="0" width="2" height="42" fill="#000000"/><rect x="488" y="0" width="2" height="42" fill="#000000"/><rect x="490" y="0" width="2" height="42" fill="#000000"/><rect x="500" y="0" width="2" height="42" fill="#000000"/><rect x="504" y="0" width="2" height="42" fill="#000000"/><rect x="510" y="0" width="2" height="42" fill="#000000"/><rect x="512" y="0" width="2" height="42" fill="#000000"/><rect x="516" y="0" width="2" height="42" fill="#000000"/><rect x="522" y="0" width="2" height="42" fill="#000000"/><rect x="524" y="0" width="2" height="42" fill="#000000"/><rect x="532" y="0" width="2" height="42" fill="#000000"/><rect x="534" y="0" width="2" height="42" fill="#000000"/><rect x="542" y="0" width="2" height="42" fill="#000000"/><rect x="546" y="0" width="2" height="42" fill="#000000"/><rect x="554" y="0" width="2" height="42" fill="#000000"/><rect x="560" y="0" width="2" height="42" fill="#000000"/><rect x="562" y="0" width="2" height="42" fill="#000000"/><rect x="572" y="0" width="2" height="42" fill="#000000"/><rect x="576" y="0" width="2" height="42" fill="#000000"/><rect x="578" y="0" width="2" height="42" fill="#000000"/><rect x="588" y="0" width="2" height="42" fill="#000000"/><rect x="594" y="0" width="2" height="42" fill="#000000"/><rect x="598" y="0" width="2" height="42" fill="#000000"/><rect x="600" y="0" width="2" height="42" fill="#000000"/><rect x="608" y="0" width="2" height="42" fill="#000000"/><rect x="610" y="0" width="2" height="42" fill="#000000"/><rect x="612" y="0" width="2" height="42" fill="#000000"/><rect x="616" y="0" width="2" height="42" fill="#000000"/><rect x="620" y="0" width="2" height="42" fill="#000000"/><rect x="622" y="0" width="2" height="42" fill="#000000"/></svg>
-                  </div>
-                  
-                  <div class="flex items-center justify-between text-[7px] sm:text-[8px] font-mono text-gray-900 font-bold tracking-wider px-0.5 border-t border-gray-200 pt-1">
-                    <span id="barcodeEncodedString">NNPC-KD-2026-084 • VICTOR BENEDICT</span>
-                    <span id="barcodeOwnerPhoneDisplay">+234 (0) 803 555 0192</span>
+                  <div class="flex items-center gap-3">
+                    <div id="cardQrCode" class="shrink-0 overflow-hidden rounded-md" role="img" aria-label="Member details QR code"></div>
+                    <div class="min-w-0 font-mono text-gray-300">
+                      <div id="cardQrMemberId" class="break-all text-[10px] font-bold text-white sm:text-xs">NNPC-KD-2026-084</div>
+                      <div id="cardQrContact" class="mt-1 text-[8px] sm:text-[9px]">+234 (0) 803 555 0192</div>
+                    </div>
                   </div>
                 </div>
 
@@ -873,7 +938,7 @@
           <div class="flex flex-wrap gap-3 mt-6 justify-center">
             <button type="button" onclick="toggleCardFlip()" class="px-5 py-2.5 rounded-lg bg-brand-emerald border-2 border-brand-gold text-brand-gold font-bold font-mono text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-              Flip Card &bull; View Barcode & Details
+              Flip Card &bull; View QR Code & Details
             </button>
             <button type="button" onclick="triggerPrintCR80()" class="px-5 py-2.5 rounded-lg bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold-dark text-brand-deep font-semibold font-mono text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
@@ -885,28 +950,26 @@
             </button>
           </div>
 
-          <!-- Permanent Live Security Barcode Telemetry Readout Panel -->
+          <!-- Permanent Live Security QR Code Telemetry Readout Panel -->
           <div class="w-full max-w-[428px] mt-6 bg-brand-deep rounded-2xl border-2 border-brand-gold/40 p-4 shadow-xl text-xs font-mono">
             <div class="flex items-center justify-between border-b border-brand-gold/20 pb-2 mb-3">
               <span class="text-brand-gold font-bold uppercase tracking-wider flex items-center gap-2">
                 <svg class="w-4 h-4 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                Digital Gate Barcode Pass
+                Digital Gate QR Code Pass
               </span>
               <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-500/30">SCANNER ACTIVE</span>
             </div>
 
-            <!-- Crisp High-Contrast Barcode Box -->
+            <!-- Crisp High-Contrast QR Code Box -->
             <div class="bg-white rounded-lg p-3 text-black border border-gray-300 shadow-inner">
               <div class="flex justify-between text-[8px] font-bold text-gray-500 uppercase tracking-widest mb-1">
-                <span>CODE-128 SECURITY TELEMETRY</span>
+                <span>MEMBER DETAILS QR CODE</span>
                 <span>NNPC TENNIS CLUB KADUNA</span>
               </div>
-              <div id="telemetryBarcodeSvg" class="w-full h-10 flex items-center justify-center overflow-hidden bg-white">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 628 36" class="w-full h-full" preserveAspectRatio="none"><rect x="4" y="0" width="2" height="36" fill="#000000"/><rect x="6" y="0" width="2" height="36" fill="#000000"/><rect x="10" y="0" width="2" height="36" fill="#000000"/><rect x="16" y="0" width="2" height="36" fill="#000000"/><rect x="26" y="0" width="2" height="36" fill="#000000"/><rect x="30" y="0" width="2" height="36" fill="#000000"/><rect x="32" y="0" width="2" height="36" fill="#000000"/><rect x="38" y="0" width="2" height="36" fill="#000000"/><rect x="40" y="0" width="2" height="36" fill="#000000"/><rect x="42" y="0" width="2" height="36" fill="#000000"/><rect x="48" y="0" width="2" height="36" fill="#000000"/><rect x="54" y="0" width="2" height="36" fill="#000000"/><rect x="56" y="0" width="2" height="36" fill="#000000"/><rect x="60" y="0" width="2" height="36" fill="#000000"/><rect x="62" y="0" width="2" height="36" fill="#000000"/><rect x="64" y="0" width="2" height="36" fill="#000000"/><rect x="70" y="0" width="2" height="36" fill="#000000"/><rect x="72" y="0" width="2" height="36" fill="#000000"/><rect x="74" y="0" width="2" height="36" fill="#000000"/><rect x="80" y="0" width="2" height="36" fill="#000000"/><rect x="86" y="0" width="2" height="36" fill="#000000"/><rect x="88" y="0" width="2" height="36" fill="#000000"/><rect x="92" y="0" width="2" height="36" fill="#000000"/><rect x="98" y="0" width="2" height="36" fill="#000000"/><rect x="100" y="0" width="2" height="36" fill="#000000"/><rect x="102" y="0" width="2" height="36" fill="#000000"/><rect x="106" y="0" width="2" height="36" fill="#000000"/><rect x="108" y="0" width="2" height="36" fill="#000000"/><rect x="114" y="0" width="2" height="36" fill="#000000"/><rect x="116" y="0" width="2" height="36" fill="#000000"/><rect x="122" y="0" width="2" height="36" fill="#000000"/><rect x="126" y="0" width="2" height="36" fill="#000000"/><rect x="128" y="0" width="2" height="36" fill="#000000"/><rect x="130" y="0" width="2" height="36" fill="#000000"/><rect x="136" y="0" width="2" height="36" fill="#000000"/><rect x="138" y="0" width="2" height="36" fill="#000000"/><rect x="140" y="0" width="2" height="36" fill="#000000"/><rect x="146" y="0" width="2" height="36" fill="#000000"/><rect x="150" y="0" width="2" height="36" fill="#000000"/><rect x="152" y="0" width="2" height="36" fill="#000000"/><rect x="158" y="0" width="2" height="36" fill="#000000"/><rect x="160" y="0" width="2" height="36" fill="#000000"/><rect x="166" y="0" width="2" height="36" fill="#000000"/><rect x="168" y="0" width="2" height="36" fill="#000000"/><rect x="172" y="0" width="2" height="36" fill="#000000"/><rect x="180" y="0" width="2" height="36" fill="#000000"/><rect x="182" y="0" width="2" height="36" fill="#000000"/><rect x="186" y="0" width="2" height="36" fill="#000000"/><rect x="188" y="0" width="2" height="36" fill="#000000"/><rect x="194" y="0" width="2" height="36" fill="#000000"/><rect x="196" y="0" width="2" height="36" fill="#000000"/><rect x="202" y="0" width="2" height="36" fill="#000000"/><rect x="206" y="0" width="2" height="36" fill="#000000"/><rect x="208" y="0" width="2" height="36" fill="#000000"/><rect x="216" y="0" width="2" height="36" fill="#000000"/><rect x="218" y="0" width="2" height="36" fill="#000000"/><rect x="224" y="0" width="2" height="36" fill="#000000"/><rect x="232" y="0" width="2" height="36" fill="#000000"/><rect x="234" y="0" width="2" height="36" fill="#000000"/><rect x="238" y="0" width="2" height="36" fill="#000000"/><rect x="240" y="0" width="2" height="36" fill="#000000"/><rect x="246" y="0" width="2" height="36" fill="#000000"/><rect x="252" y="0" width="2" height="36" fill="#000000"/><rect x="254" y="0" width="2" height="36" fill="#000000"/><rect x="262" y="0" width="2" height="36" fill="#000000"/><rect x="264" y="0" width="2" height="36" fill="#000000"/><rect x="268" y="0" width="2" height="36" fill="#000000"/><rect x="272" y="0" width="2" height="36" fill="#000000"/><rect x="274" y="0" width="2" height="36" fill="#000000"/><rect x="276" y="0" width="2" height="36" fill="#000000"/><rect x="280" y="0" width="2" height="36" fill="#000000"/><rect x="282" y="0" width="2" height="36" fill="#000000"/><rect x="290" y="0" width="2" height="36" fill="#000000"/><rect x="298" y="0" width="2" height="36" fill="#000000"/><rect x="300" y="0" width="2" height="36" fill="#000000"/><rect x="304" y="0" width="2" height="36" fill="#000000"/><rect x="312" y="0" width="2" height="36" fill="#000000"/><rect x="314" y="0" width="2" height="36" fill="#000000"/><rect x="320" y="0" width="2" height="36" fill="#000000"/><rect x="322" y="0" width="2" height="36" fill="#000000"/><rect x="328" y="0" width="2" height="36" fill="#000000"/><rect x="334" y="0" width="2" height="36" fill="#000000"/><rect x="340" y="0" width="2" height="36" fill="#000000"/><rect x="348" y="0" width="2" height="36" fill="#000000"/><rect x="350" y="0" width="2" height="36" fill="#000000"/><rect x="356" y="0" width="2" height="36" fill="#000000"/><rect x="358" y="0" width="2" height="36" fill="#000000"/><rect x="362" y="0" width="2" height="36" fill="#000000"/><rect x="364" y="0" width="2" height="36" fill="#000000"/><rect x="370" y="0" width="2" height="36" fill="#000000"/><rect x="372" y="0" width="2" height="36" fill="#000000"/><rect x="378" y="0" width="2" height="36" fill="#000000"/><rect x="382" y="0" width="2" height="36" fill="#000000"/><rect x="384" y="0" width="2" height="36" fill="#000000"/><rect x="386" y="0" width="2" height="36" fill="#000000"/><rect x="392" y="0" width="2" height="36" fill="#000000"/><rect x="394" y="0" width="2" height="36" fill="#000000"/><rect x="400" y="0" width="2" height="36" fill="#000000"/><rect x="406" y="0" width="2" height="36" fill="#000000"/><rect x="410" y="0" width="2" height="36" fill="#000000"/><rect x="412" y="0" width="2" height="36" fill="#000000"/><rect x="422" y="0" width="2" height="36" fill="#000000"/><rect x="424" y="0" width="2" height="36" fill="#000000"/><rect x="428" y="0" width="2" height="36" fill="#000000"/><rect x="438" y="0" width="2" height="36" fill="#000000"/><rect x="444" y="0" width="2" height="36" fill="#000000"/><rect x="454" y="0" width="2" height="36" fill="#000000"/><rect x="458" y="0" width="2" height="36" fill="#000000"/><rect x="460" y="0" width="2" height="36" fill="#000000"/><rect x="466" y="0" width="2" height="36" fill="#000000"/><rect x="470" y="0" width="2" height="36" fill="#000000"/><rect x="480" y="0" width="2" height="36" fill="#000000"/><rect x="482" y="0" width="2" height="36" fill="#000000"/><rect x="488" y="0" width="2" height="36" fill="#000000"/><rect x="490" y="0" width="2" height="36" fill="#000000"/><rect x="500" y="0" width="2" height="36" fill="#000000"/><rect x="504" y="0" width="2" height="36" fill="#000000"/><rect x="510" y="0" width="2" height="36" fill="#000000"/><rect x="512" y="0" width="2" height="36" fill="#000000"/><rect x="516" y="0" width="2" height="36" fill="#000000"/><rect x="522" y="0" width="2" height="36" fill="#000000"/><rect x="524" y="0" width="2" height="36" fill="#000000"/><rect x="532" y="0" width="2" height="36" fill="#000000"/><rect x="534" y="0" width="2" height="36" fill="#000000"/><rect x="542" y="0" width="2" height="36" fill="#000000"/><rect x="546" y="0" width="2" height="36" fill="#000000"/><rect x="554" y="0" width="2" height="36" fill="#000000"/><rect x="560" y="0" width="2" height="36" fill="#000000"/><rect x="562" y="0" width="2" height="36" fill="#000000"/><rect x="572" y="0" width="2" height="36" fill="#000000"/><rect x="576" y="0" width="2" height="36" fill="#000000"/><rect x="578" y="0" width="2" height="36" fill="#000000"/><rect x="588" y="0" width="2" height="36" fill="#000000"/><rect x="594" y="0" width="2" height="36" fill="#000000"/><rect x="598" y="0" width="2" height="36" fill="#000000"/><rect x="600" y="0" width="2" height="36" fill="#000000"/><rect x="608" y="0" width="2" height="36" fill="#000000"/><rect x="610" y="0" width="2" height="36" fill="#000000"/><rect x="612" y="0" width="2" height="36" fill="#000000"/><rect x="616" y="0" width="2" height="36" fill="#000000"/><rect x="620" y="0" width="2" height="36" fill="#000000"/><rect x="622" y="0" width="2" height="36" fill="#000000"/></svg>
-              </div>
+              <div id="gateQrCode" class="mx-auto" role="img" aria-label="Gate pass QR code"></div>
               <div class="flex justify-between text-[9px] font-bold text-gray-900 tracking-wider mt-1 border-t border-gray-200 pt-1">
-                <span id="telemetryBarcodeCode">NNPC-KD-2026-084</span>
-                <span id="telemetryBarcodePhone">+234 (0) 803 555 0192</span>
+                <span id="gateQrMemberId">NNPC-KD-2026-084</span>
+                <span id="gateQrContact">+234 (0) 803 555 0192</span>
               </div>
             </div>
 
@@ -1246,6 +1309,71 @@
         </div>
       </div>
 
+      <section class="mt-8 rounded-2xl border border-brand-gold/30 bg-brand-card p-4 sm:p-6" aria-labelledby="ballInventoryHeading">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h3 id="ballInventoryHeading" class="font-serif text-2xl font-bold text-white">Tennis Ball Inventory</h3>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="printBallInventory()" class="rounded border border-brand-gold/40 px-3 py-2 text-sm font-bold text-brand-gold">Print report</button>
+            <button type="button" onclick="downloadBallInventory()" class="rounded border border-brand-gold/40 bg-brand-emerald px-3 py-2 text-sm font-bold text-brand-gold">Download CSV</button>
+          </div>
+        </div>
+        <dl class="mt-4 grid grid-cols-3 gap-2 sm:gap-4">
+          <div class="rounded-lg bg-brand-deep p-3">
+            <dt class="text-xs text-gray-300">Balls received</dt>
+            <dd id="ballsReceived" class="mt-1 break-all text-xl font-bold tabular-nums text-white">0</dd>
+          </div>
+          <div class="rounded-lg bg-brand-deep p-3">
+            <dt class="text-xs text-gray-300">Balls used</dt>
+            <dd id="ballsUsed" class="mt-1 break-all text-xl font-bold tabular-nums text-white">0</dd>
+          </div>
+          <div class="rounded-lg bg-brand-deep p-3">
+            <dt class="text-xs text-gray-300">Balls remaining</dt>
+            <dd id="ballsRemaining" class="mt-1 break-all text-xl font-bold tabular-nums text-brand-gold">0</dd>
+          </div>
+        </dl>
+
+        <div class="mt-5 grid items-start gap-4 sm:grid-cols-2">
+          <form id="ballDonationForm" onsubmit="recordBallMovement(event, 'received')" class="space-y-3 rounded-lg border border-brand-gold/20 p-4">
+            <h4 class="font-bold text-white">Record balls received</h4>
+            <label class="block text-sm text-gray-300">
+              Donating member
+              <select name="donor" id="ballDonor" required class="mt-1 w-full rounded border border-brand-gold/30 bg-brand-deep px-3 py-2 text-white"></select>
+            </label>
+            <label class="block text-sm text-gray-300">
+              Number of balls
+              <input name="quantity" type="number" min="1" step="1" required class="mt-1 w-full rounded border border-brand-gold/30 bg-brand-deep px-3 py-2 text-white">
+            </label>
+            <button type="submit" class="rounded border border-brand-gold/40 bg-brand-emerald px-3 py-2 text-sm font-bold text-brand-gold">Record donation</button>
+          </form>
+
+          <form id="ballUsageForm" onsubmit="recordBallMovement(event, 'used')" class="space-y-3 rounded-lg border border-brand-gold/20 p-4">
+            <h4 class="font-bold text-white">Record balls used</h4>
+            <label class="block text-sm text-gray-300">
+              Number of balls
+              <input name="quantity" type="number" min="1" step="1" required class="mt-1 w-full rounded border border-brand-gold/30 bg-brand-deep px-3 py-2 text-white">
+            </label>
+            <button type="submit" class="rounded border border-brand-gold/40 bg-brand-emerald px-3 py-2 text-sm font-bold text-brand-gold">Record usage</button>
+          </form>
+        </div>
+
+        <p id="ballInventoryStatus" class="mt-3 text-sm text-gray-300" role="status"></p>
+        <h4 class="mt-4 font-bold text-white">Inventory history</h4>
+        <p id="ballInventoryEmpty" class="mt-2 text-sm text-gray-400">No inventory entries yet.</p>
+        <div id="ballInventoryTable" class="mt-2 hidden overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-brand-gold/30 text-brand-gold">
+              <tr>
+                <th scope="col" class="p-2">Date</th>
+                <th scope="col" class="p-2">Activity</th>
+                <th scope="col" class="p-2">Balls</th>
+                <th scope="col" class="p-2">Donating member</th>
+              </tr>
+            </thead>
+            <tbody id="ballInventoryHistory" class="divide-y divide-brand-gold/10 text-gray-300"></tbody>
+          </table>
+        </div>
+      </section>
+
     </section>
 
   </main>
@@ -1454,15 +1582,13 @@
           </div>
         </div>
 
-        <!-- Decoded Barcode Payload Data Box -->
+        <!-- Decoded QR Code Payload Data Box -->
         <div class="bg-brand-forest/60 rounded-xl p-3 border border-brand-gold/30">
           <div class="flex justify-between items-center text-[10px] text-gray-400 mb-1">
-            <span class="font-bold text-brand-gold uppercase">Raw Barcode Encoded String</span>
-            <span class="text-emerald-400 font-bold">CODE-128 COMPLIANT</span>
+            <span class="font-bold text-brand-gold uppercase">Encoded Member Details</span>
+            <span class="text-emerald-400 font-bold">QR CODE</span>
           </div>
-          <div id="modalBarcodePayload" class="text-[9px] font-mono break-all text-gray-300 bg-brand-deep p-2 rounded border border-brand-gold/15">
-            NNPC-KD-2026-084|NAME:Victor Benedict|TEL:+2348035550192|LOC:NNPC Quarters, Sabo, Kaduna|TIER:HERITAGE PATRON|NTRP:4.5 Verified|UTR:8.42|CLEARED|https://nnpc-kaduna.club/player/NNPC-KD-2026-084
-          </div>
+          <div id="modalQrPayload" class="whitespace-pre-wrap break-words rounded border border-brand-gold/15 bg-brand-deep p-2 font-mono text-[9px] text-gray-300"></div>
         </div>
       </div>
 
@@ -1479,6 +1605,24 @@
     </div>
   </div>
   <!-- 4. PRINTABLE AREA CONTAINER (FOR CR80 PRINTING) -->
+  <section id="ballInventoryPrintReport" aria-labelledby="ballInventoryPrintTitle">
+    <p>NNPC Tennis Club Kaduna</p>
+    <h1 id="ballInventoryPrintTitle">Tennis Ball Inventory</h1>
+    <p id="ballInventoryPrintDate"></p>
+    <p id="ballInventoryPrintTotals"></p>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Activity</th>
+          <th scope="col">Balls</th>
+          <th scope="col">Donating member</th>
+        </tr>
+      </thead>
+      <tbody id="ballInventoryPrintRows"></tbody>
+    </table>
+  </section>
+
   <div id="printableArea" class="hidden">
     <div class="max-w-2xl mx-auto p-8 text-black bg-white">
       <div class="text-center border-b pb-4 mb-6">
@@ -1511,24 +1655,22 @@
           </div>
         </div>
 
-        <!-- Print Back with Barcode & Owner Info -->
+        <!-- Print Back with QR Code & Owner Info -->
         <div class="w-[340px] h-[214px] rounded-xl border-2 border-dashed border-gray-400 p-3 bg-[#07100B] text-white flex flex-col justify-between relative shadow">
           <div class="bg-black h-5 -mx-3 -mt-3"></div>
           
-          <div class="bg-white rounded p-1.5 text-black">
-            <div id="printBarcodeSvg" class="w-full h-7 flex items-center justify-center overflow-hidden"></div>
-            <div id="printBarcodeText" class="text-[7px] font-mono text-center font-bold tracking-wider mt-0.5"></div>
-          </div>
-
-          <div class="bg-[#0F1E17] p-2 rounded text-[8px] font-mono space-y-0.5 border border-amber-600/30">
-            <div class="flex justify-between"><span class="text-gray-400">Cardholder:</span> <b id="printBackName" class="text-amber-300"></b></div>
-            <div class="flex justify-between"><span class="text-gray-400">Member ID:</span> <b id="printBackId" class="text-white"></b></div>
-            <div class="flex justify-between"><span class="text-gray-400">Contact:</span> <b id="printBackPhone" class="text-emerald-400"></b></div>
-            <div class="flex justify-between"><span class="text-gray-400">Address:</span> <span id="printBackAddress" class="text-gray-300">NNPC Quarters, Sabo, Kaduna</span></div>
+          <div class="flex items-center gap-2">
+            <div id="printQrCode" class="shrink-0 overflow-hidden rounded-md" role="img" aria-label="Printed member details QR code"></div>
+            <div class="min-w-0 flex-1 rounded border border-amber-600/30 bg-[#0F1E17] p-2 text-[8px] font-mono space-y-0.5">
+              <div class="flex justify-between"><span class="text-gray-400">Cardholder:</span> <b id="printBackName" class="text-amber-300"></b></div>
+              <div class="flex justify-between"><span class="text-gray-400">Member ID:</span> <b id="printBackId" class="text-white"></b></div>
+              <div class="flex justify-between"><span class="text-gray-400">Contact:</span> <b id="printBackPhone" class="text-emerald-400"></b></div>
+              <div class="flex justify-between"><span class="text-gray-400">Address:</span> <span id="printBackAddress" class="text-gray-300">NNPC Quarters, Sabo, Kaduna</span></div>
+            </div>
           </div>
 
           <div class="text-[7px] font-mono border-t border-gray-700 pt-1 flex justify-between">
-            <span>OFFICIAL MEMBER BARCODE SEAL</span>
+            <span>OFFICIAL MEMBER QR CODE SEAL</span>
             <span class="text-emerald-400">STATUS: CLEARED</span>
           </div>
         </div>
@@ -1577,7 +1719,10 @@
   <!-- ========================================== -->
   <!-- JAVASCRIPT LOGIC & STATE PERSISTENCE       -->
   <!-- ========================================== -->
+  <script src="assets/qrcode-generator.js"></script>
   <script>
+    window.addEventListener('DOMContentLoaded', updatePassportLive);
+
     // --- DEFAULT INITIAL STATE SEEDS ---
     const DEFAULT_MEMBERS = [
       {
@@ -1756,6 +1901,8 @@
     let bookings = JSON.parse(localStorage.getItem('nnpc_bookings')) || DEFAULT_BOOKINGS;
     let receipts = JSON.parse(localStorage.getItem('nnpc_receipts')) || DEFAULT_RECEIPTS;
     let mediaItems = JSON.parse(localStorage.getItem('nnpc_media')) || DEFAULT_MEDIA;
+    let adminSignedIn = false;
+    const ballInventoryKey = 'nnpc_ball_inventory';
     let currentCardTheme = 'obsidian';
     let bookingPlayerType = 'member';
     let currentHeroSlide = 0;
@@ -1775,7 +1922,6 @@
       renderMedia();
       renderReceipts();
       renderAdminTable();
-      updatePassportLive();
 
       // Start Hero 60s Carousel
       startHeroRotation();
@@ -1783,6 +1929,22 @@
 
     // --- TAB SWITCHING LOGIC ---
     function switchTab(tabId) {
+      if (tabId === 'admin' && !adminSignedIn) {
+        openAdminModal();
+        return;
+      }
+      if (tabId !== 'admin' && adminSignedIn) {
+        adminSignedIn = false;
+        document.getElementById('ballInventoryHistory').replaceChildren();
+        document.getElementById('ballDonor').replaceChildren();
+        for (const id of ['ballsReceived', 'ballsUsed', 'ballsRemaining']) {
+          document.getElementById(id).textContent = '0';
+        }
+        document.getElementById('ballInventoryStatus').textContent = '';
+        document.getElementById('ballDonationForm').reset();
+        document.getElementById('ballUsageForm').reset();
+      }
+
       document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
       const activePane = document.getElementById('tab-' + tabId);
       if (activePane) activePane.classList.remove('hidden');
@@ -2017,34 +2179,34 @@
       }
     }
 
-    // --- DYNAMIC BARCODE GENERATOR FOR ID CARD BACK ---
-    function generateBarcodeSvg(dataText) {
-      let bars = [];
-      let x = 6;
-      // Leading quiet zone & start guard
-      bars.push('<rect x="' + x + '" y="0" width="2" height="34" fill="#000"/>'); x += 3;
-      bars.push('<rect x="' + x + '" y="0" width="1" height="34" fill="#000"/>'); x += 2;
-      bars.push('<rect x="' + x + '" y="0" width="3" height="34" fill="#000"/>'); x += 4;
-      
-      for (let i = 0; i < dataText.length; i++) {
-        const code = dataText.charCodeAt(i);
-        const w1 = ((code % 3) + 1);
-        const s1 = (((code >> 1) % 2) + 1);
-        const w2 = (((code >> 2) % 3) + 1);
-        const s2 = (((code >> 3) % 2) + 1);
-        
-        bars.push('<rect x="' + x + '" y="0" width="' + w1 + '" height="32" fill="#000"/>');
-        x += w1 + s1;
-        bars.push('<rect x="' + x + '" y="0" width="' + w2 + '" height="32" fill="#000"/>');
-        x += w2 + s2;
-        if (x > 260) break;
+    function renderMemberQrCode(payload) {
+      let svg = '';
+      let errorMessage = '';
+
+      try {
+        qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+        const code = qrcode(0, 'M');
+        code.addData(payload);
+        code.make();
+        svg = code.createSvgTag({ cellSize: 1, scalable: true });
+      } catch (error) {
+        errorMessage = String(error).startsWith('code length overflow')
+          ? 'Member details are too long for the QR code.'
+          : 'The QR code could not be generated.';
       }
-      // Stop guard pattern
-      bars.push('<rect x="' + x + '" y="0" width="3" height="34" fill="#000"/>'); x += 4;
-      bars.push('<rect x="' + x + '" y="0" width="1" height="34" fill="#000"/>'); x += 2;
-      bars.push('<rect x="' + x + '" y="0" width="2" height="34" fill="#000"/>'); x += 6;
-      
-      return '<svg viewBox="0 0 ' + Math.max(x, 260) + ' 35" class="w-full h-full" preserveAspectRatio="none">' + bars.join('') + '</svg>';
+
+      for (const id of ['cardQrCode', 'gateQrCode', 'printQrCode']) {
+        const container = document.getElementById(id);
+        if (svg) {
+          container.innerHTML = svg;
+          container.setAttribute('role', 'img');
+        } else {
+          container.textContent = errorMessage;
+          container.removeAttribute('role');
+        }
+      }
+
+      document.getElementById('modalQrPayload').textContent = errorMessage || payload;
     }
 
     // --- PLAYER PROFILE MODAL VIA CARD BACK LINK ---
@@ -2083,9 +2245,6 @@
       if (document.getElementById('modalBarServe')) document.getElementById('modalBarServe').style.width = Math.min(100, Math.round((serve / 130) * 100)) + "%";
       if (document.getElementById('modalProfileVolley')) document.getElementById('modalProfileVolley').innerText = volley + " / 100";
       if (document.getElementById('modalBarVolley')) document.getElementById('modalBarVolley').style.width = volley + "%";
-
-      const fullPayload = `${memberId}|NAME:${name}|TEL:${emergency}|LOC:${address}|TIER:${tier}|NTRP:${ntrp}|UTR:${utr}|EXP:${expiry}|STATUS:CLEARED|URL:https://nnpc-kaduna.club/player/${memberId}`;
-      if (document.getElementById('modalBarcodePayload')) document.getElementById('modalBarcodePayload').innerText = fullPayload;
 
       document.getElementById('modalPlayerProfile').classList.remove('hidden');
     }
@@ -2128,7 +2287,6 @@
       // Update Card Preview
       document.getElementById('cardDisplayName').innerText = name;
       document.getElementById('cardDisplayTier').innerText = tier;
-      document.getElementById('cardDisplayEmergency').innerText = emergency;
       document.getElementById('cardDisplayNTRP').innerText = calculatedNtrp;
       document.getElementById('cardDisplayUTR').innerText = calculatedUtr;
 
@@ -2141,46 +2299,41 @@
       if (document.getElementById('cardBackPhone')) document.getElementById('cardBackPhone').innerText = emergency;
       if (document.getElementById('cardBackAddress')) document.getElementById('cardBackAddress').innerText = address;
       if (document.getElementById('cardBackSignature')) document.getElementById('cardBackSignature').innerText = name;
-      if (document.getElementById('barcodeEncodedString')) document.getElementById('barcodeEncodedString').innerText = memberId;
-      if (document.getElementById('barcodeOwnerPhoneDisplay')) document.getElementById('barcodeOwnerPhoneDisplay').innerText = emergency;
+      if (document.getElementById('cardQrMemberId')) document.getElementById('cardQrMemberId').innerText = memberId;
+      if (document.getElementById('cardQrContact')) document.getElementById('cardQrContact').innerText = emergency;
 
-      // Encode EVERY piece of information at the back into the Barcode
-      const profileUrl = "https://nnpc-kaduna.club/player/" + memberId;
-      const barcodePayload = `${memberId}|NAME:${name}|TEL:${emergency}|LOC:${address}|TIER:${tier}|NTRP:${calculatedNtrp}|UTR:${calculatedUtr}|EXP:${document.getElementById('cardDisplayExpiry').innerText}|STATUS:CLEARED|URL:${profileUrl}`;
-      const barcodeSvg = generateBarcodeSvg(barcodePayload);
-      
-      const barcodeContainer = document.getElementById('cardBarcodeSvgContainer');
-      if (barcodeContainer) barcodeContainer.innerHTML = barcodeSvg;
+      const profileUrl = `https://nnpc-kaduna.club/player/${encodeURIComponent(memberId)}`;
+      const qrPayload = [
+        `Member ID: ${memberId}`,
+        `Cardholder: ${name}`,
+        `Contact: ${emergency}`,
+        `Address: ${address}`,
+        `Tier: ${tier}`,
+        `NTRP: ${calculatedNtrp}`,
+        `UTR: ${calculatedUtr}`,
+        `Valid through: ${document.getElementById('cardDisplayExpiry').innerText}`,
+        'Status: CLEARED',
+        'Issuer: NNPC Tennis Club Kaduna, NNPC Quarters Sabo',
+        `Player profile: ${profileUrl}`,
+      ].join('\n');
+      renderMemberQrCode(qrPayload);
 
       // Update Card Back Profile Link
       if (document.getElementById('cardBackProfileLink')) {
-        document.getElementById('cardBackProfileLink').innerText = "nnpc-kaduna.club/player/" + memberId;
+        document.getElementById('cardBackProfileLink').innerText = profileUrl.replace('https://', '');
       }
       if (document.getElementById('cardBackSignature')) {
         document.getElementById('cardBackSignature').innerText = name;
       }
-      if (document.getElementById('barcodeEncodedString')) {
-        document.getElementById('barcodeEncodedString').innerText = `${memberId} • ${name}`;
-      }
-      if (document.getElementById('barcodeOwnerPhoneDisplay')) {
-        document.getElementById('barcodeOwnerPhoneDisplay').innerText = emergency;
-      }
 
-      // Update Permanent Telemetry Barcode Panel
-      const telemetrySvgContainer = document.getElementById('telemetryBarcodeSvg');
-      if (telemetrySvgContainer) telemetrySvgContainer.innerHTML = barcodeSvg;
-      if (document.getElementById('telemetryBarcodeCode')) document.getElementById('telemetryBarcodeCode').innerText = memberId;
-      if (document.getElementById('telemetryBarcodePhone')) document.getElementById('telemetryBarcodePhone').innerText = emergency;
+      // Update Permanent Telemetry QR Code Panel
+      if (document.getElementById('gateQrMemberId')) document.getElementById('gateQrMemberId').innerText = memberId;
+      if (document.getElementById('gateQrContact')) document.getElementById('gateQrContact').innerText = emergency;
       if (document.getElementById('telemetryName')) document.getElementById('telemetryName').innerText = name;
       if (document.getElementById('telemetryPhone')) document.getElementById('telemetryPhone').innerText = emergency;
       if (document.getElementById('telemetryAddress')) document.getElementById('telemetryAddress').innerText = address;
 
       // Update Printable Back Sheet
-      const printBarcodeSvg = document.getElementById('printBarcodeSvg');
-      if (printBarcodeSvg) printBarcodeSvg.innerHTML = barcodeSvg;
-      if (document.getElementById('printBarcodeText')) {
-        document.getElementById('printBarcodeText').innerText = memberId + ' • ' + name + ' • ' + emergency;
-      }
       if (document.getElementById('printBackName')) document.getElementById('printBackName').innerText = name;
       if (document.getElementById('printBackId')) document.getElementById('printBackId').innerText = memberId;
       if (document.getElementById('printBackPhone')) document.getElementById('printBackPhone').innerText = emergency;
@@ -2497,15 +2650,225 @@
       e.preventDefault();
       const code = document.getElementById('adminPasscodeInput').value.trim();
       if (code === 'nnpc2026' || code === 'admin') {
+        adminSignedIn = true;
+        e.currentTarget.reset();
         closeAdminModal();
         switchTab('admin');
+        refreshBallDonors();
+        refreshBallInventory();
         showToast("Authenticated as Kaduna Club Administrator.", "success");
       } else {
-        showToast("Incorrect admin passcode. Try 'nnpc2026'", "error");
+        showToast("Incorrect admin passcode.", "error");
       }
     }
 
+    function refreshBallDonors() {
+      if (!adminSignedIn) return;
+      const select = document.getElementById('ballDonor');
+      const selected = select.value;
+      select.replaceChildren(new Option('Select a member', ''));
+      for (const member of members) {
+        select.add(new Option(`${member.name} (${member.id})`, member.id));
+      }
+      select.value = members.some(member => member.id === selected) ? selected : '';
+    }
+
+    function readBallInventory() {
+      return JSON.parse(localStorage.getItem(ballInventoryKey) ?? '[]');
+    }
+
+    function countBalls(entries) {
+      let received = 0;
+      let used = 0;
+      for (const entry of entries) {
+        if (entry.type === 'received') received += entry.quantity;
+        else used += entry.quantity;
+      }
+      return { received, used, remaining: received - used };
+    }
+
+    function refreshBallInventory() {
+      if (!adminSignedIn) return;
+      let entries;
+      try {
+        entries = readBallInventory();
+      } catch {
+        document.getElementById('ballInventoryStatus').textContent = 'Inventory could not be loaded.';
+        return;
+      }
+
+      const { received, used, remaining } = countBalls(entries);
+      document.getElementById('ballsReceived').textContent = received.toLocaleString();
+      document.getElementById('ballsUsed').textContent = used.toLocaleString();
+      document.getElementById('ballsRemaining').textContent = remaining.toLocaleString();
+      document.getElementById('ballInventoryEmpty').classList.toggle('hidden', entries.length > 0);
+      document.getElementById('ballInventoryTable').classList.toggle('hidden', entries.length === 0);
+
+      const rows = document.createDocumentFragment();
+      for (const entry of entries.slice().reverse()) {
+        const row = document.createElement('tr');
+        const cells = [
+          new Date(entry.timestamp).toLocaleString(),
+          entry.type === 'received' ? 'Received' : 'Used',
+          entry.quantity.toLocaleString(),
+          entry.donor ? `${entry.donor.name} (${entry.donor.id})` : '—',
+        ];
+        for (const text of cells) {
+          const cell = row.insertCell();
+          cell.className = 'p-2';
+          cell.textContent = text;
+        }
+        rows.append(row);
+      }
+      document.getElementById('ballInventoryHistory').replaceChildren(rows);
+    }
+
+    function getBallInventoryReport() {
+      if (!adminSignedIn) return null;
+      try {
+        const entries = readBallInventory();
+        return {
+          asOf: new Date(),
+          totals: countBalls(entries),
+          rows: entries.slice().reverse().map(entry => [
+            entry.timestamp,
+            entry.type === 'received' ? 'Received' : 'Used',
+            entry.quantity,
+            entry.donor?.name ?? '',
+          ]),
+        };
+      } catch {
+        document.getElementById('ballInventoryStatus').textContent = 'Inventory could not be loaded for export.';
+        return null;
+      }
+    }
+
+    function printBallInventory() {
+      const report = getBallInventoryReport();
+      if (!report) return;
+
+      const { received, used, remaining } = report.totals;
+      document.getElementById('ballInventoryPrintDate').textContent = `As of ${report.asOf.toLocaleString()}`;
+      document.getElementById('ballInventoryPrintTotals').textContent =
+        `Received: ${received.toLocaleString()} · Used: ${used.toLocaleString()} · Remaining: ${remaining.toLocaleString()}`;
+
+      const history = document.getElementById('ballInventoryPrintRows');
+      history.replaceChildren();
+      for (const [date, activity, quantity, donor] of report.rows) {
+        const row = history.insertRow();
+        for (const text of [new Date(date).toLocaleString(), activity, quantity.toLocaleString(), donor || '—']) {
+          row.insertCell().textContent = text;
+        }
+      }
+      if (!report.rows.length) {
+        const cell = history.insertRow().insertCell();
+        cell.colSpan = 4;
+        cell.textContent = 'No inventory entries yet.';
+      }
+
+      document.body.classList.add('print-ball-inventory');
+      window.print();
+    }
+
+    window.addEventListener('afterprint', () => {
+      document.body.classList.remove('print-ball-inventory');
+      document.getElementById('ballInventoryPrintRows').replaceChildren();
+      document.getElementById('ballInventoryPrintDate').textContent = '';
+      document.getElementById('ballInventoryPrintTotals').textContent = '';
+    });
+
+    function downloadBallInventory() {
+      const report = getBallInventoryReport();
+      if (!report) return;
+
+      const { received, used, remaining } = report.totals;
+      const rows = [
+        ['NNPC Tennis Club Kaduna', 'Tennis Ball Inventory', '', ''],
+        ['As of (UTC)', report.asOf.toISOString(), '', ''],
+        ['Balls received', received, '', ''],
+        ['Balls used', used, '', ''],
+        ['Balls remaining', remaining, '', ''],
+        ['', '', '', ''],
+        ['Date (UTC)', 'Activity', 'Balls', 'Donating member'],
+        ...report.rows,
+      ];
+      const csv = rows.map(row => row.map(value => {
+        let text = String(value);
+        // Keep member names as text in spreadsheet applications.
+        if (typeof value === 'string' && /^[\s\uFEFF]*[=+@-]/.test(text)) text = "'" + text;
+        return '"' + text.replaceAll('"', '""') + '"';
+      }).join(',')).join('\r\n') + '\r\n';
+
+      const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `tennis-ball-inventory-${report.asOf.toISOString().slice(0, 10)}.csv`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    async function recordBallMovement(event, type) {
+      event.preventDefault();
+      if (!adminSignedIn) return;
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      if (button.disabled) return;
+      const status = document.getElementById('ballInventoryStatus');
+      const data = new FormData(form);
+      const quantity = Number(data.get('quantity'));
+      if (!Number.isSafeInteger(quantity) || quantity < 1) {
+        status.textContent = 'Enter a positive whole number of balls.';
+        return;
+      }
+
+      const member = members.find(member => member.id === data.get('donor'));
+      if (type === 'received' && !member) {
+        status.textContent = 'Select the member who donated the balls.';
+        return;
+      }
+      const entry = {
+        type,
+        quantity,
+        donor: member ? { id: member.id, name: member.name } : null,
+        timestamp: new Date().toISOString(),
+      };
+
+      const save = () => {
+        if (!adminSignedIn) return;
+        const entries = readBallInventory();
+        const { received, remaining } = countBalls(entries);
+        if (type === 'used' && quantity > remaining) {
+          status.textContent = `Only ${remaining.toLocaleString()} balls remain in stock.`;
+          return;
+        }
+        if (type === 'received' && !Number.isSafeInteger(received + quantity)) {
+          status.textContent = 'The total number of balls is too large.';
+          return;
+        }
+        entries.push(entry);
+        localStorage.setItem(ballInventoryKey, JSON.stringify(entries));
+        form.reset();
+        refreshBallInventory();
+        status.textContent = type === 'received' ? 'Donation recorded.' : 'Usage recorded.';
+      };
+
+      button.disabled = true;
+      try {
+        if (navigator.locks) await navigator.locks.request(ballInventoryKey, save);
+        else save();
+      } catch {
+        if (adminSignedIn) status.textContent = 'Inventory could not be saved.';
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    window.addEventListener('storage', event => {
+      if (event.key === ballInventoryKey || event.key === null) refreshBallInventory();
+    });
+
     function renderAdminTable() {
+      refreshBallDonors();
       const tbody = document.getElementById('adminMemberTable');
       tbody.innerHTML = members.map((m, idx) => `
         <tr class="hover:bg-brand-forest/40 transition">

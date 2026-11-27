@@ -32,10 +32,10 @@
 
 3. **Player Passport & Printable ISO CR80 Physical ID Studio**
    - Interactive 3D flip card with **Obsidian Forest** and **Championship White** themes.
-   - **Full Barcode Back & Player Profile Link:** The entire back of the ID card encodes the complete member dossier into a high-density Code-128 security barcode (Member ID, Full Name, Contact Mobile, NNPC Quarters Sabo Address, Honor Tier, NTRP/UTR ratings, Dues Standing, and Profile URL) paired with a direct interactive link (`nnpc-kaduna.club/player/NNPC-KD-...`) that launches the verified **Player Profile Modal**.
+   - **Member QR Code & Player Profile:** The back of the ID card displays a QR code containing the member ID, cardholder name, contact, address, tier, ratings, expiry, status, issuer, and player profile URL and a button that opens the **Player Profile Modal**.
    - Real-time rating calibration (NTRP & UTR) and stroke telemetry sliders (Forehand Topspin, Backhand Slice, First Serve MPH, Net Volley).
    - Custom portrait uploader & sample avatar cycling.
-   - **Print-ready ISO CR80 standard card sheet** (`85.6mm × 53.98mm`) featuring front and barcode-enabled back with QR verification code and cut lines formatted via `@media print`.
+   - **Print-ready ISO CR80 standard card sheet** (`85.6mm × 53.98mm`) featuring front and a back with the member details QR code and cut lines formatted via `@media print`.
    - Credential JSON export.
 
 4. **Member Ladder & Player Roster**
@@ -59,6 +59,7 @@
 7. **Admin Governance Console**
    - Passcode-protected access (Default: `nnpc2026` or `admin`).
    - Member management table: toggle dues clearance, extend validity dates, register new members.
+   - Tennis ball inventory: record donations against registered members, log usage, and view received, used, and remaining counts with a dated history. Print the inventory report or download a CSV to share with members. Records are stored in the current browser.
 
 ---
 
